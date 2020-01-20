@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value="NewFriend" />
+
+    <list>
+        <mapping class="com.qaqzz.framework.db.NewFriend" />
+        <mapping class="com.qaqzz.framework.db.CallRecord" />
+    </list>
+
+    <version value="2" />
+
+</litepal>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+
+    <item android:drawable="@drawable/img_guide_smile_1" android:duration="2000"/>
+    <item android:drawable="@drawable/img_guide_smile_2" android:duration="2000"/>
+    <item android:drawable="@drawable/img_guide_smile_3" android:duration="2000"/>
+    <item android:drawable="@drawable/img_guide_smile_4" android:duration="2000"/>
+    <item android:drawable="@drawable/img_guide_smile_5" android:duration="2000"/>
+    <item android:drawable="@drawable/img_guide_smile_6" android:duration="2000"/>
+    <item android:drawable="@drawable/img_guide_smile_7" android:duration="2000"/>
+    <item android:drawable="@drawable/img_guide_smile_8" android:duration="2000"/>
+    <item android:drawable="@drawable/img_guide_smile_9" android:duration="2000"/>
+
+
+</animation-list>

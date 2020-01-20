@@ -1,2 +1,2 @@
-include ':app', ':common'
+include ':app', ':framework'
 rootProject.name='free-im'

@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
