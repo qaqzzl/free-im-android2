@@ -7,19 +7,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:background="#161825"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorAccent"
+            android:background="#161825"
             android:paddingLeft="15dp"
             android:paddingRight="15dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="40dp">
+                android:layout_height="40dp"
+                android:layout_marginTop="30dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -27,7 +28,7 @@
                     android:layout_centerInParent="true"
                     android:text="@string/text_main_square"
                     android:textColor="@android:color/white"
-                    android:textSize="22sp" />
+                    android:textSize="18sp" />
 
                 <ImageView
                     android:id="@+id/iv_push"
@@ -81,7 +82,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="30dp"
-        android:backgroundTint="@color/colorAccent"
+        android:backgroundTint="@color/color_background"
         android:src="@drawable/img_squaue_top" />
 
 </RelativeLayout>

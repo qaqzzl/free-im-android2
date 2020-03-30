@@ -1,5 +1,6 @@
 package com.qaqzz.free_im.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +8,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.qaqzz.framework.entity.Constants;
+import com.qaqzz.framework.utils.SpUtils;
+import com.qaqzz.free_im.activities.MeInfoActivity;
+import com.qaqzz.free_im.activities.NewFriendActivity;
+import com.qaqzz.free_im.activities.SettingActivity;
 import com.qaqzz.free_im.http.api.ApiListener;
 import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.framework.base.BaseFragment;
@@ -109,7 +115,11 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
             apiBase.post(new ApiListener() {
                 @Override
                 public void success(ApiUtil api, JSONObject response) {
-                    //把用户昵称跟用户头像保存下来
+                    // 把用户昵称跟用户头像保存下来
+//                    SpUtils.getInstance().putString(Constants.SP_USER_NAME, apiBase.mInfo.getNickname());
+//                    SpUtils.getInstance().putString(Constants.SP_USER_AVATAR, apiBase.mInfo.getAvatar());
+
+                    // 展示个人信息
                     GlideHelper.loadSmollUrl(getActivity(), apiBase.mInfo.getAvatar(), 100, 100, iv_me_photo);
                     tv_nickname.setText(apiBase.mInfo.getNickname());
                 }
@@ -129,11 +139,11 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.ll_me_info:
                 //个人信息
-//                startActivity(new Intent(getActivity(), MeInfoActivity.class));
+                startActivity(new Intent(getActivity(), MeInfoActivity.class));
                 break;
             case R.id.ll_new_friend:
                 //新朋友
-//                startActivity(new Intent(getActivity(), NewFriendActivity.class));
+                startActivity(new Intent(getActivity(), NewFriendActivity.class));
                 break;
             case R.id.ll_private_set:
                 //隐私设置
@@ -149,7 +159,7 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
                 break;
             case R.id.ll_setting:
                 //设置
-//                startActivity(new Intent(getActivity(), SettingActivity.class));
+                startActivity(new Intent(getActivity(), SettingActivity.class));
                 break;
         }
     }

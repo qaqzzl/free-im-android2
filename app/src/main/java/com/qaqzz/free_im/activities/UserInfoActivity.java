@@ -17,8 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.qaqzz.framework.adapter.CommonAdapter;
 import com.qaqzz.framework.adapter.CommonViewHolder;
 import com.qaqzz.framework.base.BaseActivity;
+import com.qaqzz.framework.base.BaseUIActivity;
 import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.helper.GlideHelper;
+import com.qaqzz.framework.utils.SpUtils;
+import com.qaqzz.free_im.api.AddFriendApi;
 import com.qaqzz.free_im.http.api.ApiListener;
 import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.framework.manager.DialogManager;
@@ -39,7 +42,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Founder: LiuGuiLin
  * Profile: 用户信息
  */
-public class UserInfoActivity extends BaseActivity implements View.OnClickListener {
+public class UserInfoActivity extends BaseUIActivity implements View.OnClickListener {
 
     private DialogView mAddFriendDialogView;
     private EditText et_msg;
@@ -88,8 +91,6 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
 
     private Button btn_add_friend;
     private Button btn_chat;
-    private Button btn_audio_chat;
-    private Button btn_video_chat;
 
     private LinearLayout ll_is_friend;
 
@@ -153,15 +154,11 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         mUserInfoView = (RecyclerView) findViewById(R.id.mUserInfoView);
         btn_add_friend = (Button) findViewById(R.id.btn_add_friend);
         btn_chat = (Button) findViewById(R.id.btn_chat);
-        btn_audio_chat = (Button) findViewById(R.id.btn_audio_chat);
-        btn_video_chat = (Button) findViewById(R.id.btn_video_chat);
         ll_is_friend = (LinearLayout) findViewById(R.id.ll_is_friend);
 
         ll_back.setOnClickListener(this);
         btn_add_friend.setOnClickListener(this);
         btn_chat.setOnClickListener(this);
-        btn_audio_chat.setOnClickListener(this);
-        btn_video_chat.setOnClickListener(this);
         iv_user_photo.setOnClickListener(this);
 
         //列表
@@ -195,7 +192,8 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         tv_cancel = (TextView) mAddFriendDialogView.findViewById(R.id.tv_cancel);
         tv_add_friend = (TextView) mAddFriendDialogView.findViewById(R.id.tv_add_friend);
 
-        et_msg.setText(getString(R.string.text_me_info_tips));
+        String user_name = SpUtils.getInstance().getString(Constants.SP_USER_NAME, "");
+        et_msg.setText(getString(R.string.text_me_info_tips) + user_name);
 
         tv_cancel.setOnClickListener(this);
         tv_add_friend.setOnClickListener(this);
@@ -234,6 +232,36 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
+     * 添加好友请求
+     */
+    private void addFriend(String msg) {
+        Context context = this;
+        //添加好友请求
+        try{
+            AddFriendApi apiBase = new AddFriendApi(userId, msg);
+            apiBase.post(new ApiListener() {
+                @Override
+                public void success(ApiUtil api, JSONObject response) {
+                    DialogManager.getInstance().hide(mAddFriendDialogView);
+                    Toast.makeText(context, apiBase.mInfo.getMessage(), Toast.LENGTH_SHORT).show();
+                    //判断是否添加成功
+                    if (apiBase.mInfo.getCode().equals("1")) {
+
+                    } else {
+                        // 跳转聊天页面
+                    }
+                }
+                @Override
+                public void error(ApiUtil api, JSONObject response) {
+
+                }
+            });
+        }catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
      * 更新用户信息
      *
      */
@@ -247,8 +275,7 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         //性别 年龄 生日 星座
         addUserInfoModel(mColor[0], getString(R.string.text_me_info_sex), mInfo.isSex() ? getString(R.string.text_me_info_boy) : getString(R.string.text_me_info_girl));
         addUserInfoModel(mColor[1], getString(R.string.text_me_info_age), "0" + getString(R.string.text_search_age));
-        addUserInfoModel(mColor[2], getString(R.string.text_me_info_birthday), mInfo.getBirthdate());
-        addUserInfoModel(mColor[3], getString(R.string.text_me_info_constellation), "未知星座");
+        addUserInfoModel(mColor[2], getString(R.string.text_me_info_constellation), "未知星座");
         //刷新数据
         mUserInfoAdapter.notifyDataSetChanged();
     }
@@ -277,11 +304,7 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
                     msg = getString(R.string.text_user_info_add_friend);
                     return;
                 }
-                // 发送融云通知
-//                CloudManager.getInstance().sendTextMessage(msg,
-//                        CloudManager.TYPE_ADD_FRIEND, userId);
-                DialogManager.getInstance().hide(mAddFriendDialogView);
-                Toast.makeText(this, getString(R.string.text_user_resuest_succeed), Toast.LENGTH_SHORT).show();
+                addFriend(msg);
                 break;
             case R.id.tv_cancel:
                 DialogManager.getInstance().hide(mAddFriendDialogView);
@@ -298,21 +321,6 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
             case R.id.btn_chat:     // 点击聊天
                 ChatActivity.startActivity(UserInfoActivity.this,
                         userId, mInfo.getNickname(), mInfo.getAvatar());
-                break;
-            case R.id.btn_audio_chat:   // 语音通话
-                //窗口权限
-//                if (!checkWindowPermissions()) {
-//                    requestWindowPermissions();
-//                } else {
-//                    CloudManager.getInstance().startAudioCall(this, userId);
-//                }
-                break;
-            case R.id.btn_video_chat:   // 视频通话
-//                if (!checkWindowPermissions()) {
-//                    requestWindowPermissions();
-//                } else {
-//                    CloudManager.getInstance().startVideoCall(this, userId);
-//                }btn_delete_friend
                 break;
             case R.id.btn_delete_friend:   // 删除好友
 //                if (!checkWindowPermissions()) {

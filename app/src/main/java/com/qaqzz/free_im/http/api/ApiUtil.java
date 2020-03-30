@@ -1,9 +1,9 @@
 package com.qaqzz.free_im.http.api;
 
 import android.content.Context;
-import android.widget.Toast;
 
-import com.qaqzz.free_im.http.Util.Util;
+import com.qaqzz.framework.utils.LogUtils;
+import com.qaqzz.framework.utils.Util;
 import com.qaqzz.free_im.http.response.OkHttpCallback;
 
 import org.json.JSONObject;
@@ -18,7 +18,7 @@ public abstract class ApiUtil {
     /**
      * 状态码
      */
-    private String mStatus = "";
+    private int mCode;
 
     /**
      * 上下文
@@ -43,7 +43,7 @@ public abstract class ApiUtil {
         @Override
         public void onSuccess(Call call, JSONObject response) {
             if (null != response) {
-                mStatus = response.optString("status");
+                mCode = response.optInt("code");
 
                 if (isSuccess()) {
                     try {
@@ -65,6 +65,7 @@ public abstract class ApiUtil {
 
         @Override
         public void onFailure(Call call, IOException e) {
+            LogUtils.i("接口请求错误");
             if (null != mApiListener) {
                 mApiListener.failure(ApiUtil.this);
             }
@@ -121,7 +122,7 @@ public abstract class ApiUtil {
     }
 
     public boolean isSuccess() {
-        return ("0".equals(mStatus)) || ("200".equals(mStatus) || ("success".equals(mStatus)) || ("ok".equals(mStatus)) );
+        return ( mCode == 0 );
     }
 
 

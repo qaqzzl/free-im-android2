@@ -1,12 +1,12 @@
 <resources>
 
-    <string name="app_name">遇见</string>
+    <string name="app_name">Free自由</string>
 
     <string name="app_index_text">相遇总是美好的</string>
 
     <string name="text_main_friend">好友</string>
-    <string name="text_main_square">广场</string>
-    <string name="text_main_chat">聊天</string>
+    <string name="text_main_square">动态</string>
+    <string name="text_main_chat">消息</string>
     <string name="text_main_me">我的</string>
 
     <string name="text_guide_skip">跳过</string>
@@ -22,6 +22,7 @@
     <string name="text_login_agreement_1">我已阅读并同意</string>
     <string name="text_login_agreement_2"><u>用户协议</u></string>
     <string name="text_login_phone_null">手机号码不能为空</string>
+    <string name="text_login_nickname_null">用户名不能为空</string>
     <string name="text_login_pw_null">密码不能为空</string>
     <string name="text_login_code_null">验证码不能为空</string>
     <string name="text_login_now_login_text">正在登陆...</string>

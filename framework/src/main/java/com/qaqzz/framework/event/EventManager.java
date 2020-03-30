@@ -13,11 +13,11 @@ public class EventManager {
     public static final int FLAG_UPDATE_FRIEND_LIST = 1000;
 
     //发送文本数据
-    public static final int FLAG_SEND_TEXT = 1001;
+    public static final int FLAG_SEND_TEXT = 1;
     //发送图片数据
-    public static final int FLAG_SEND_IMAGE = 1002;
+    public static final int FLAG_SEND_IMAGE = 2;
     //发送位置数据
-    public static final int FLAG_SEND_LOCATION = 1003;
+    public static final int FLAG_SEND_LOCATION = 3;
 
     //相机数据
     public static final int FLAG_SEND_CAMERA_VIEW = 1004;

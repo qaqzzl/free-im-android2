@@ -8,7 +8,7 @@ import android.view.View;
 /**
  * FileName: SystemUI
  * Founder: LiuGuiLin
- * Profile: 沉浸式实现
+ * Profile: 沉浸式状态栏实现
  */
 public class SystemUI {
 

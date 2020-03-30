@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="@color/color_background"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -18,7 +19,7 @@
             android:layout_marginRight="10dp"
             android:gravity="right"
             android:text="Null"
-            android:textColor="@android:color/black"
+            android:textColor="@color/color_text"
             android:textSize="16sp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -26,7 +27,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginRight="10dp"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@mipmap/ic_free" />
 
 
     </LinearLayout>

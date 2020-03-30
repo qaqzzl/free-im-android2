@@ -10,6 +10,7 @@ public class MessageStruct {
     private int code;
     private String chatroom_id;
     private String content;
+    private String message_id;
 
     public int getCode() {
         return code;
@@ -23,7 +24,11 @@ public class MessageStruct {
         return content;
     }
 
-    public void setCode(int access_token) {
+    public String getMessage_id() {
+        return message_id;
+    }
+
+    public void setCode(int code) {
         this.code = code;
     }
 
@@ -33,5 +38,9 @@ public class MessageStruct {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void setMessage_id(String message_id) {
+        this.message_id = message_id;
     }
 }

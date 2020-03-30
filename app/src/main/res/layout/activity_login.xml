@@ -20,12 +20,12 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/et_phone"
+                android:id="@+id/et_search"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/login_edit_bg"
                 android:cursorVisible="false"
-                android:hint="@string/text_login_phone"
+                android:hint="@string/text_upload_nickname"
                 android:inputType="phone"
                 android:padding="5dp" />
 
@@ -72,7 +72,7 @@
                 android:id="@+id/tv_password_login"
                 android:layout_marginTop="10dp"
                 android:gravity="right"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/color_text"
                 android:text="密码登录"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
@@ -106,7 +106,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/text_login_agreement_2"
-            android:textColor="@color/colorPrimary" />
+            android:textColor="@color/color_text" />
 
     </LinearLayout>
 

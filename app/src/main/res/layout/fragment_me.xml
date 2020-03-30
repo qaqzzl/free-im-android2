@@ -2,6 +2,7 @@
 <com.qaqzz.framework.view.HeadZoomScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:background="@color/color_background"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -16,6 +17,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:scaleType="matrix"
                 android:background="@drawable/img_me_bg" />
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -38,8 +40,8 @@
                     android:id="@+id/tv_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/color_star_bg"
-                    android:textSize="24sp" />
+                    android:textColor="@color/color_text"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/tv_server_status"
@@ -62,7 +64,6 @@
                 android:id="@+id/ll_me_info"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@android:color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingLeft="15dp"
@@ -79,7 +80,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:text="@string/text_me_item_title_1"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@color/color_text" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -92,7 +93,6 @@
                 android:id="@+id/ll_new_friend"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@android:color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingLeft="15dp"
@@ -109,7 +109,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:text="@string/text_me_item_title_3"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@color/color_text" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -123,7 +123,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
-                android:background="@android:color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingLeft="15dp"
@@ -140,7 +139,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:text="@string/text_me_item_title_4"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@color/color_text" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -153,7 +152,6 @@
                 android:id="@+id/ll_share"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@android:color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingLeft="15dp"
@@ -170,7 +168,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:text="@string/text_me_item_title_5"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@color/color_text" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -183,7 +181,6 @@
                 android:id="@+id/ll_notice"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@android:color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingLeft="15dp"
@@ -200,7 +197,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:text="无法连接服务器的通知[必看]"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@color/color_text" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -213,7 +210,6 @@
                 android:id="@+id/ll_setting"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@android:color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingLeft="15dp"
@@ -230,7 +226,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:text="@string/text_me_item_title_6"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@color/color_text" />
 
                 <ImageView
                     android:layout_width="wrap_content"

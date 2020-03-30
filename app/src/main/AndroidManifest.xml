@@ -4,9 +4,9 @@
     package="com.qaqzz.free_im">
 
     <application
-        android:name=".base.BaseApp"
+        android:name=".BaseApp"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_free"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -35,6 +35,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activities.GuideActivity"
             android:launchMode="singleTask"
@@ -54,22 +55,56 @@
             android:launchMode="singleTask"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
-        <!--添加好友-->
-<!--        <activity-->
-<!--            android:name=".ui.AddFriendActivity"-->
-<!--            android:label="@string/text_user_add_friend"-->
-<!--            android:launchMode="singleTask" />-->
-
         <!--用户信息-->
         <activity
             android:name=".activities.UserInfoActivity"
             android:launchMode="singleTask"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
-        <!--聊天-->
+        <!--聊天室-->
         <activity
             android:name=".activities.ChatActivity"
             android:launchMode="singleTask" />
+
+        <!--添加好友-->
+        <activity
+            android:name=".activities.AddFriendActivity"
+            android:label="@string/text_user_add_friend"
+            android:launchMode="singleTask" />
+
+        <!--个人信息-->
+        <activity
+            android:name=".activities.MeInfoActivity"
+            android:label="@string/text_me_item_title_1"
+            android:launchMode="singleTask" />
+
+        <!--新朋友-->
+        <activity
+            android:name=".activities.NewFriendActivity"
+            android:label="@string/text_me_item_title_3"
+            android:launchMode="singleTask" />
+
+        <!--设置-->
+        <activity
+            android:name=".activities.SettingActivity"
+            android:launchMode="singleTask" />
+
+        <!--发布动态-->
+        <activity
+            android:name=".activities.DynamicPublishActivity"
+            android:label="@string/text_square_psuh"
+            android:launchMode="singleTask" />
+
+        <!--FileProvide-->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.qaqzz.free_im.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
     </application>
 
 </manifest>

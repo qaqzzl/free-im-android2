@@ -13,6 +13,10 @@ public class Constants {
     public static final String SP_TOKEN = "token";
     //Token
     public static final String SP_USERID = "uid";
+    // 用户昵称
+    public static final String SP_USER_NAME = "user_name";
+    // 用户头像
+    public static final String SP_USER_AVATAR = "user_avatar";
     //设备ID
     public static final String SP_DEVICEID = "device_id";
     //手机号码
@@ -23,6 +27,7 @@ public class Constants {
     public static final String SP_CHAT_THEME = "chat_theme";
 
     //Intent 传递
+    public static final String INTENT_CHATROOM_ID = "intent_chatroom_id";
     public static final String INTENT_USER_ID = "intent_user_id";
     public static final String INTENT_USER_NAME = "intent_user_name";
     public static final String INTENT_USER_PHOTO = "intent_user_photo";

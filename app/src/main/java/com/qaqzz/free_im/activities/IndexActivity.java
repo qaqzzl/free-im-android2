@@ -1,28 +1,18 @@
 package com.qaqzz.free_im.activities;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import com.qaqzz.framework.base.BaseActivity;
 import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.utils.LogUtils;
 import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.MainActivity;
 import com.qaqzz.free_im.R;
-import com.qaqzz.free_im.http.Util.Util;
-
-import java.util.List;
 
 
 /**
@@ -79,7 +69,7 @@ public class IndexActivity extends AppCompatActivity {
             //2.如果非第一次启动，判断是否曾经登录过
             String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
             if (TextUtils.isEmpty(token)) {
-                //3.判断Bmob是否登录
+                //3.判断是否登录
                 if (checkToken()) {
                     //跳转到主页
                     intent.setClass(this, MainActivity.class);
@@ -143,7 +133,7 @@ public class IndexActivity extends AppCompatActivity {
      * 检查TOKEN
      */
     private boolean checkToken() {
-        LogUtils.i("checkToken");
+//        LogUtils.i("checkToken");
         //获取TOKEN , USERID
         String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
         String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");

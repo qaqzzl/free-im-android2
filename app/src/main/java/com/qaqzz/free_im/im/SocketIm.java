@@ -1,5 +1,6 @@
 package com.qaqzz.free_im.im;
 
+import android.os.Message;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -34,7 +35,7 @@ public class SocketIm extends Thread {
     private BufferedOutputStream bos;
     private BufferedInputStream bis;
     private ReadThread readThread;
-    private WriteRead writeRead;
+//    private WriteRead writeRead;
 
     public void run() {
         try {
@@ -60,8 +61,9 @@ public class SocketIm extends Thread {
             System.out.println(jsonStr);
             Send("10"+jsonStr);
 
-            is_init = true;
+            is_init = true;     // 初始化完成
 
+            // 开启新线程监听消息
             readThread = new ReadThread();
             readThread.start();
         } catch (UnknownHostException e) {
@@ -86,7 +88,9 @@ public class SocketIm extends Thread {
                         String str = new String(data, 0, size);
                         Message msg = new Message();
                         msg.obj = new String(str);
-                        mHandler.sendMessage(msg);
+                        //mHandler.sendMessage(msg);
+                        Log.d("SOCKET", "接受到的消息:" + str);
+                        // 写入本地数据库
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -96,7 +100,7 @@ public class SocketIm extends Thread {
     }
 
     // 发送消息
-    public static void Send(String string) {
+    public static void Send(String str) {
         new Thread() {
             @Override
             public void run() {
@@ -109,8 +113,8 @@ public class SocketIm extends Thread {
                     //2.拿到客户端的socket对象的输出流发送给服务器数据
                     OutputStream os = socket.getOutputStream();
                     //写入要发送给服务器的数据
-                    String s1 = new String(string.getBytes(),"UTF-8");
-                    os.write(s1.getBytes());
+                    String message = new String(str.getBytes(),"UTF-8");
+                    os.write(str.getBytes());
                     os.flush();
                     // 关闭输出流
                     //socket.shutdownOutput();
@@ -124,4 +128,12 @@ public class SocketIm extends Thread {
         }.start();
 
     }
+
+
+    /**
+     * 监听指定聊天室消息
+     */
+
+
+
 }

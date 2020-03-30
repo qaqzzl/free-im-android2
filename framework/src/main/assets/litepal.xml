@@ -3,7 +3,7 @@
     <dbname value="NewFriend" />
 
     <list>
-        <mapping class="com.qaqzz.framework.db.NewFriend" />
+        <mapping class="com.qaqzz.free_im.model.NewFriendModel" />
         <mapping class="com.qaqzz.framework.db.CallRecord" />
     </list>
 

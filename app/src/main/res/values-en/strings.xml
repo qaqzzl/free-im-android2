@@ -1,0 +1,220 @@
+<resources>
+
+    <string name="app_name">Free</string>
+
+    <string name="app_index_text">It\'s always nice to meet</string>
+
+    <string name="text_main_star">star</string>
+    <string name="text_main_square">square</string>
+    <string name="text_main_chat">chat</string>
+    <string name="text_main_me">me</string>
+
+    <string name="text_guide_skip">skip</string>
+    <string name="text_guide_pager_1">Everyone is a lonely planet</string>
+    <string name="text_guide_pager_2">We seek light in the dark</string>
+    <string name="text_guide_pager_3">If you meet, please smile</string>
+
+    <string name="text_login_phone">phone number</string>
+    <string name="text_login_code">code</string>
+    <string name="text_login_password">password</string>
+    <string name="text_login_send">send</string>
+    <string name="text_login_login">login</string>
+    <string name="text_login_agreement_1">I have read and agree</string>
+    <string name="text_login_agreement_2"><u>User agreement</u></string>
+    <string name="text_login_phone_null">The phone number cannot be empty</string>
+    <string name="text_login_pw_null">The password cannot be empty</string>
+    <string name="text_login_code_null">The captcha cannot be empty</string>
+    <string name="text_login_now_login_text">Landing..</string>
+
+    <string name="text_update_nickname_null">Nicknames cannot be empty</string>
+    <string name="text_pair_random">In random matching..</string>
+    <string name="text_pair_soul">Soul matching..</string>
+    <string name="text_pair_fate">In predestination matching..</string>
+    <string name="text_pair_love">In a relationship match..</string>
+    <string name="text_pair_null">No match object</string>
+
+    <string name="text_mian_dialog_text1">Welcome to meet App</string>
+    <string name="text_mian_dialog_text2">I heard this is your first time to use it</string>
+    <string name="text_mian_dialog_text3">Come and fill in the information</string>
+
+    <string name="text_toast_error_qrcode">Wrong qr code</string>
+    <string name="text_qrcode_fail">Failed to parse qr code</string>
+
+    <string name="text_service_calling">Call..</string>
+    <string name="text_service_video_calling">Video calls..</string>
+    <string name="text_service_call_ing">Is call</string>
+    <string name="text_service_call_video_ing">Calling from video</string>
+
+    <string name="text_dialog_camera">Take a</string>
+    <string name="text_dialog_ablum">Select from album</string>
+    <string name="text_dialog_cancel">return</string>
+
+    <string name="text_add_friend_contact">Import from address book</string>
+    <string name="text_add_friend_title">The search results</string>
+    <string name="text_add_friend_content">Recommend friends</string>
+    <string name="text_add_friend_no_me">You can\'t query yourself</string>
+
+    <string name="text_upload_title">Profile upload/profile entry</string>
+    <string name="text_upload_photo_title">A profile picture with personality can attract people</string>
+    <string name="text_upload_nickname_title">A name, a story</string>
+    <string name="text_upload_nickname">nickname</string>
+    <string name="text_upload_done">complete</string>
+
+    <string name="text_search_age">annum</string>
+
+    <string name="text_user_add_friend">Add friends</string>
+    <string name="text_user_chat">chat</string>
+    <string name="text_user_audio_chat">audio chat</string>
+    <string name="text_user_video_chat">video chat</string>
+    <string name="text_user_resuest_succeed">request successful</string>
+    <string name="text_user_resuest_fail">request fail</string>
+
+    <string name="text_new_friend_agree">Has agreed to</string>
+    <string name="text_new_friend_no_agree">Has refused to</string>
+
+    <string name="text_chat_tab_title_1">Chat record</string>
+    <string name="text_chat_tab_title_2">Call records</string>
+    <string name="text_chat_tab_title_3">All friends</string>
+
+    <string name="text_me_info_name">The name</string>
+    <string name="text_me_info_sex">gender</string>
+    <string name="text_me_info_age">age</string>
+    <string name="text_me_info_desc">desc</string>
+    <string name="text_me_info_birthday">birthday</string>
+    <string name="text_me_info_constellation">constellation</string>
+    <string name="text_me_info_hobby">hobby</string>
+    <string name="text_me_info_status">status</string>
+    <string name="text_me_info_tips">Hello, this is </string>
+
+    <string name="text_me_info_boy">boy</string>
+    <string name="text_me_info_girl">girl</string>
+
+    <string name="text_chat_record_audio">[audio]</string>
+    <string name="text_chat_record_video">[video]</string>
+    <string name="text_chat_record_img">[image]</string>
+    <string name="text_chat_record_location">[location]</string>
+
+    <string name="text_call_record_un_answer">[Did the phone]</string>
+    <string name="text_chat_record_dial">[Have the phone]</string>
+    <string name="text_chat_record_answer">[answer the phone]</string>
+
+    <string name="text_push_type_img">image</string>
+    <string name="text_push_type_music">music</string>
+    <string name="text_push_type_video">video</string>
+
+    <string name="text_square_psuh">release</string>
+    <string name="text_square_hint_text">Record this moment and share it with someone who understands you..</string>
+
+    <string name="text_all_friend_desc">signature：</string>
+
+    <string name="text_me_item_title_1">user info</string>
+    <string name="text_me_item_title_2">My qr code</string>
+    <string name="text_me_item_title_3">new friend</string>
+    <string name="text_me_item_title_4">Privacy Settings</string>
+    <string name="text_me_item_title_5">share</string>
+    <string name="text_me_item_title_6">setting</string>
+
+    <string name="text_main_star_1">random</string>
+    <string name="text_main_star_2">soul</string>
+    <string name="text_main_star_3">fate</string>
+    <string name="text_main_star_4">love</string>
+
+    <string name="menu_input_text">published</string>
+    <string name="menu_info_save_text">save</string>
+
+    <string name="dialog_add_firend_title">Add contacts</string>
+    <string name="dialog_add_firend_msg">Leave a message..</string>
+    <string name="dialog_add_firend_confirm">confirm</string>
+    <string name="dialog_add_firend_add">add</string>
+    <string name="dialog_add_firend_cancel">Cancel</string>
+
+    <string name="text_setting_systemui_tips">Notice bar reminder</string>
+    <string name="text_setting_clear_cache">Clear the cache</string>
+    <string name="text_setting_update_languaue">Change the language</string>
+    <string name="text_setting_check_permissions">Check window permissions</string>
+    <string name="text_setting_version">version number</string>
+    <string name="text_setting_zh">中文</string>
+    <string name="text_setting_en">English</string>
+    <string name="text_setting_logout">Log out</string>
+    <string name="text_share_download">Download to album</string>
+
+    <string name="text_private_setting_title">Disallow me from my address book</string>
+    <string name="text_private_setting_content">When this function is enabled, users cannot find you through the address book</string>
+
+    <string name="text_delete">delete</string>
+
+    <!--2019.11.18 新增-->
+    <string name="text_squate_love">love</string>
+    <string name="text_star_par_tips_1">Please first improve your personal information - horoscope</string>
+    <string name="text_star_par_tips_2">Please first improve your personal information - age</string>
+    <string name="text_star_par_tips_3">Please first improve your personal information - hobby</string>
+    <string name="text_star_par_tips_4">Please first improve your personal information - status</string>
+    <string name="text_star_pserver_fail">Server connection failed</string>
+    <string name="text_server_noti_send_text">Request to add friends</string>
+    <string name="text_server_noti_receiver_text">Agree to add friends</string>
+    <string name="text_chat_info_del_text">Delete the friend or not?</string>
+    <string name="text_chat_info_del_error">Delete failed：</string>
+    <string name="text_upload_photo_loding">Uploading avatar..</string>
+    <string name="text_iv_pre_downloading">Is downloading..</string>
+    <string name="text_iv_pre_save_fail">Save failed</string>
+    <string name="text_location_search">Are the search..</string>
+    <string name="text_location">location</string>
+    <string name="text_login_code_error">Verification code error</string>
+    <string name="text_me_info_update">update info</string>
+    <string name="text_private_set_open_ing">About to open..</string>
+    <string name="text_private_set_close_ing">Is closing..</string>
+    <string name="text_private_set_succeess">Open the success</string>
+    <string name="text_private_set_fail">Close the success</string>
+    <string name="text_push_ing">Is released..</string>
+    <string name="text_push_ed_null">Please enter content</string>
+    <string name="text_push_fail">Post failure</string>
+    <string name="text_shar_save_ing">Is to save..</string>
+    <string name="text_test_login_fail">Wrong username or password</string>
+    <string name="text_user_info_add_friend">Add a friend！</string>
+    <string name="text_main_exit">Press exit again</string>
+
+    <string name="text_server_status_text_1">online</string>
+    <string name="text_server_status_text_2">connecting</string>
+    <string name="text_server_status_text_3">offline</string>
+    <string name="text_server_status_text_4">Network unavailable</string>
+    <string name="text_server_status_text_5">Server Exception</string>
+    <string name="text_server_status_text_6">token error</string>
+
+    <string-array name="ConstellatioArray">
+        <item>Aries</item>
+        <item>Taurus</item>
+        <item>Gemini</item>
+        <item>cancer</item>
+        <item>Leo</item>
+        <item>virgo</item>
+        <item>libra</item>
+        <item>Scorpio</item>
+        <item>Sagittarius</item>
+        <item>Capricorn</item>
+        <item>Aquarius</item>
+        <item>Pisces</item>
+    </string-array>
+
+    <string-array name="StatusArray">
+        <item>married</item>
+        <item>single</item>
+        <item>Madly in love</item>
+        <item>Unrequited love</item>
+    </string-array>
+
+    <string-array name="HobbyArray">
+        <item>sport</item>
+        <item>music</item>
+        <item>moive</item>
+        <item>painting</item>
+        <item>novel</item>
+        <item>adventure</item>
+        <item>puzzle</item>
+        <item>collection</item>
+        <item>game</item>
+        <item>daze</item>
+        <item>moe</item>
+        <item>net love</item>
+    </string-array>
+
+</resources>

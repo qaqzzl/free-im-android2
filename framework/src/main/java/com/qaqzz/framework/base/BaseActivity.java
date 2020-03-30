@@ -7,15 +7,21 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.event.EventManager;
 import com.qaqzz.framework.event.MessageEvent;
 import com.qaqzz.framework.helper.ActivityHelper;
 import com.qaqzz.framework.utils.LanguaueUtils;
+import com.qaqzz.framework.utils.LogUtils;
+import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.framework.utils.SystemUI;
+import com.qaqzz.framework.utils.Util;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -175,6 +181,24 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     /**
+     * 请求权限
+     */
+    private void requestPermiss() {
+        //危险权限
+        request(new OnPermissionsResult() {
+            @Override
+            public void OnSuccess() {
+
+            }
+
+            @Override
+            public void OnFail(List<String> noPermissions) {
+                LogUtils.i("noPermissions:" + noPermissions.toString());
+            }
+        });
+    }
+
+    /**
      * EventBus的步骤：
      * 1.注册
      * 2.声明注册方法 onEvent
@@ -185,7 +209,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SystemUI.fixSystemUI(this);
+        requestPermiss();
+
+        ActivityHelper.getInstance().addActivity(this);
+
+        LanguaueUtils.updateLanguaue(this);
+//        EventManager.register(this);
+
         // 在页面未初始化之前调用的初始化数据
         initWidows();
 
@@ -263,6 +293,14 @@ public abstract class BaseActivity extends AppCompatActivity {
                 recreate();
                 break;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

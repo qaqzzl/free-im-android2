@@ -100,9 +100,7 @@ public class FriendFragment extends BaseFragment implements SwipeRefreshLayout.O
         mAllFriendRefreshLayout.setRefreshing(true);        // 加载按钮
 
         try{
-            String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
-            String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-            FriendListApi apiBase = new FriendListApi(uid, token);
+            FriendListApi apiBase = new FriendListApi();
             apiBase.post(new ApiListener() {
                 @Override
                 public void success(ApiUtil api, JSONObject response) {
@@ -144,11 +142,19 @@ public class FriendFragment extends BaseFragment implements SwipeRefreshLayout.O
         }
     }
 
+
     @Override
     public void onRefresh() {
         if (mAllFriendRefreshLayout.isRefreshing()) {
             queryMyFriends();
         }
+    }
+
+    // 每次点击页面调用
+    @Override
+    public void onResume() {
+        super.onResume();
+        queryMyFriends();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

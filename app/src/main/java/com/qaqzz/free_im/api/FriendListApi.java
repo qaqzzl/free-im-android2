@@ -2,6 +2,8 @@ package com.qaqzz.free_im.api;
 
 
 
+import com.qaqzz.framework.entity.Constants;
+import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.free_im.CardContants;
 import com.qaqzz.free_im.bean.FriendListBean;
@@ -19,7 +21,9 @@ import java.util.List;
  */
 public class FriendListApi extends ApiUtil {
     public FriendListBean mInfo = new FriendListBean();
-    public FriendListApi(String uid, String token){
+    public FriendListApi(){
+        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
+        String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
         addParam("uid",uid);
         addParam("access_token",token);
     }

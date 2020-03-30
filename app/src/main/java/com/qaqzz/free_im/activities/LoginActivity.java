@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 
 import com.qaqzz.framework.base.BaseActivity;
+import com.qaqzz.framework.base.BaseUIActivity;
+import com.qaqzz.framework.event.EventManager;
 import com.qaqzz.free_im.http.api.ApiListener;
 import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.framework.entity.Constants;
@@ -43,7 +45,7 @@ import okhttp3.Response;
  * Founder: LiuGuiLin
  * Profile: 登录页
  */
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public class LoginActivity extends BaseUIActivity implements View.OnClickListener {
     /**
      * 1.点击发送的按钮，弹出一个提示框，图片验证码，验证通过之后
      * 2.!发送验证码，@同时按钮变成不可点击，@按钮开始倒计时，倒计时结束，@按钮可点击，@文字变成“发送”
@@ -97,7 +99,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         tv_password_login = findViewById(R.id.tv_password_login);
         tv_password_login.setOnClickListener(this);
 
-        et_phone = (EditText) findViewById(R.id.et_phone);
+        et_phone = (EditText) findViewById(R.id.et_search);
         et_code = (EditText) findViewById(R.id.et_code);
         btn_send_code = (Button) findViewById(R.id.btn_send_code);
         btn_login = (Button) findViewById(R.id.btn_login);
@@ -155,6 +157,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     SpUtils.getInstance().putString(Constants.SP_USERID, apiBase.mInfo.getUid());
                     mLodingView.hide();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    // 刷新个人信息
+                    EventManager.post(EventManager.EVENT_REFRE_ME_INFO);
                     finish();
 //                    super.success(api, response);
                 }

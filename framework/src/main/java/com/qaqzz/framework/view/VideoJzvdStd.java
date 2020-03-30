@@ -2,7 +2,9 @@ package com.qaqzz.framework.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 
+import cn.jzvd.JZDataSource;
 import cn.jzvd.JzvdStd;
 
 /**
@@ -20,4 +22,8 @@ public class VideoJzvdStd extends JzvdStd {
         super(context, attrs);
     }
 
+
+    public void setImage(String url) {
+
+    }
 }

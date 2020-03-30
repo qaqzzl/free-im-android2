@@ -19,35 +19,51 @@ import com.google.gson.Gson;
 import com.qaqzz.framework.adapter.CommonAdapter;
 import com.qaqzz.framework.adapter.CommonViewHolder;
 import com.qaqzz.framework.base.BaseActivity;
+import com.qaqzz.framework.base.BaseBackActivity;
 import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.event.EventManager;
 import com.qaqzz.framework.event.MessageEvent;
+import com.qaqzz.framework.gson.TextBean;
 import com.qaqzz.framework.helper.FileHelper;
+import com.qaqzz.framework.helper.GlideHelper;
 import com.qaqzz.framework.utils.LogUtils;
 import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.R;
 import com.qaqzz.free_im.api.FriendIdGetChatroomIdApi;
+import com.qaqzz.free_im.api.MemberInfoApi;
+import com.qaqzz.free_im.database.ChatRecord;
+import com.qaqzz.free_im.database.ChatRecordDao;
+import com.qaqzz.free_im.database.DaoManager;
+import com.qaqzz.free_im.database.Message;
+import com.qaqzz.free_im.database.MessageDao;
+import com.qaqzz.free_im.database.MessageDaoUtils;
 import com.qaqzz.free_im.http.api.ApiListener;
 import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.free_im.im.AuthMessageStruct;
 import com.qaqzz.free_im.im.MessageStruct;
 import com.qaqzz.free_im.im.SocketIm;
+import com.qaqzz.free_im.im.SocketService;
 import com.qaqzz.free_im.model.MyMemberInfo;
+import com.qaqzz.socket.socket.SocketManager;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * FileName: ChatActivity
  * Founder: LiuGuiLin
  * Profile: 聊天
  */
-public class ChatActivity extends BaseActivity implements View.OnClickListener {
+public class ChatActivity extends BaseBackActivity implements View.OnClickListener {
     @Override
     protected int getContentLayoutId() {
         return R.layout.activity_chat;
@@ -94,6 +110,22 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     private static final int LOCATION_REQUEST_CODE = 1888;
 
     private static final int CHAT_INFO_REQUEST_CODE = 1889;
+
+    /**
+     * 跳转
+     */
+    public static void startChatRecordActivity(Context mContext, String ChatroomId,
+                                     String Name, String Photo) {
+//        if (!CloudManager.getInstance().isConnect()) {
+//            Toast.makeText(mContext, mContext.getString(R.string.text_server_status), Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+        Intent intent = new Intent(mContext, ChatActivity.class);
+        intent.putExtra(Constants.INTENT_CHATROOM_ID, ChatroomId);
+        intent.putExtra(Constants.INTENT_USER_NAME, Name);
+        intent.putExtra(Constants.INTENT_USER_PHOTO, Photo);
+        mContext.startActivity(intent);
+    }
 
     /**
      * 跳转
@@ -150,7 +182,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     private File uploadFile = null;
 
     // 聊天室房间ID
-    private String chatroom_id = "";
+    private String chatroom_id;
 
     private static class ChatModel {
 
@@ -367,27 +399,46 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
 
         loadMeInfo();
 
-        queryMessage();
     }
 
     // 初始化数据
     protected void initData() {
-        try{
-            FriendIdGetChatroomIdApi apiBase = new FriendIdGetChatroomIdApi(yourUserId);
-            apiBase.post(new ApiListener() {
-                @Override
-                public void success(ApiUtil api, JSONObject response) {
-                    chatroom_id = apiBase.mInfo.getChatroom_id();
-                }
-                @Override
-                public void error(ApiUtil api, JSONObject response) {
+        if (chatroom_id == null) {
+            try{
+                FriendIdGetChatroomIdApi apiBase = new FriendIdGetChatroomIdApi(yourUserId);
+                apiBase.post(new ApiListener() {
+                    @Override
+                    public void success(ApiUtil api, JSONObject response) {
+                        chatroom_id = apiBase.mInfo.getChatroom_id();
+                        //查询聊天室消息
+                        queryMessage();
 
-                }
-            });
+                        // 聊天室记录
+                        chatRecord();
 
-        }catch (Exception ex) {
-            ex.printStackTrace();
+                        // 消息全部设置为已读
+                        setMessageRead();
+                    }
+                    @Override
+                    public void error(ApiUtil api, JSONObject response) {
+
+                    }
+                });
+
+            }catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            //查询聊天室消息
+            queryMessage();
+
+            // 聊天室记录
+            chatRecord();
+
+            // 消息全部设置为已读
+            setMessageRead();
         }
+
     }
 
     /**
@@ -423,34 +474,45 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
                 break;
             case 9:
                 //9的话是默认，可以不设置图片，直接就是纯白
-                //ll_chat_bg.setBackgroundResource(R.drawable.img_chat_bg_9);
+                ll_chat_bg.setBackgroundResource(R.drawable.img_chat_bg_9);
+                break;
+            default:
+                ll_chat_bg.setBackgroundResource(R.drawable.img_chat_bg_9);
                 break;
         }
     }
 
     /**
-     * 查询聊天记录
+     * 查询本地聊天记录
      */
     private void queryMessage() {
-//        CloudManager.getInstance().getHistoryMessages(yourUserId, new RongIMClient.ResultCallback<List<Message>>() {
-//            @Override
-//            public void onSuccess(List<Message> messages) {
-//                if (CommonUtils.isEmpty(messages)) {
-//                    try {
-//                        parsingListMessage(messages);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                } else {
-//                    queryRemoteMessage();
-//                }
-//            }
-//
-//            @Override
-//            public void onError(RongIMClient.ErrorCode errorCode) {
-//                LogUtils.e("errorCode:" + errorCode);
-//            }
-//        });
+        DaoManager mManager = DaoManager.getInstance();
+        mManager.init(this, MessageDao.TABLENAME);
+        List<Message> messages = mManager.getDaoSession().getMessageDao().queryBuilder()
+                .where(MessageDao.Properties.Chatroom_id.eq(chatroom_id))
+//                .where(MessageDao.Properties.Message_status.eq("success"))
+                .orderAsc(MessageDao.Properties._id).list();
+        parsingListMessage(messages);
+
+
+    }
+
+    // 聊天室记录
+    private void chatRecord() {
+        // 记录聊天会话
+        DaoManager mManager = new DaoManager();
+//        mManager = mManager.getInstance();
+        mManager.init(this, ChatRecordDao.TABLENAME);
+        Long timestamp = System.currentTimeMillis();//获取系统的当前时间戳
+        // 判断是否存在
+        ChatRecord mChatRecord = mManager.getDaoSession().getChatRecordDao().queryBuilder().where(ChatRecordDao.Properties.Chatroom_id.eq(chatroom_id)).build().unique();
+        if (mChatRecord != null) {
+            mChatRecord.setLast_open_time(timestamp.intValue());
+            mManager.getDaoSession().getChatRecordDao().update(mChatRecord);
+        } else {
+            mManager.getDaoSession().getChatRecordDao().insert(new ChatRecord(null, chatroom_id, timestamp.intValue(), "common", yourUserPhoto, yourUserName));
+        }
+
     }
 
     /**
@@ -458,53 +520,56 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
      *
      * @param messages
      */
-//    private void parsingListMessage(List<Message> messages) {
-//        //倒序
-//        Collections.reverse(messages);
-//        //遍历
-//        for (int i = 0; i < messages.size(); i++) {
-//            Message m = messages.get(i);
-//            String objectName = m.getObjectName();
-//            if (objectName.equals(CloudManager.MSG_TEXT_NAME)) {
-//                TextMessage textMessage = (TextMessage) m.getContent();
-//                String msg = textMessage.getContent();
-//                LogUtils.i("msg:" + msg);
-//                try {
-//                    TextBean textBean = new Gson().fromJson(msg, TextBean.class);
-//                    if (textBean.getType().equals(CloudManager.TYPE_TEXT)) {
-//                        //添加到UI 判断是你 还是 我
+    private void parsingListMessage(List<Message> messages) {
+        // 倒序
+        // Collections.reverse(messages);
+        // 遍历
+        for (int i = 0; i < messages.size(); i++) {
+            Message m = messages.get(i);
+            String objectUserId = m.getUser_id();       // 消息用户ID
+            String me_uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");      // 我的ID
+            switch (m.getMessage_code()) {
+                case 1:         // 普通文本
+                    String msg = m.getContent();
+                    try {
+                        //添加到UI 判断是你 还是 我
+                        if (objectUserId.equals(me_uid)) {
+                            addText(1, msg);
+                        } else {
+                            addText(0, msg);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 2:     // 图片
+//                    ImageMessage imageMessage = (ImageMessage) m.getContent();
+//                    String url = imageMessage.getRemoteUri().toString();
+//                    if (!TextUtils.isEmpty(url)) {
+//                        LogUtils.i("url:" + url);
 //                        if (m.getSenderUserId().equals(yourUserId)) {
-//                            addText(0, textBean.getMsg());
+//                            addImage(0, url);
 //                        } else {
-//                            addText(1, textBean.getMsg());
+//                            addImage(1, url);
 //                        }
 //                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            } else if (objectName.equals(CloudManager.MSG_IMAGE_NAME)) {
-//                ImageMessage imageMessage = (ImageMessage) m.getContent();
-//                String url = imageMessage.getRemoteUri().toString();
-//                if (!TextUtils.isEmpty(url)) {
-//                    LogUtils.i("url:" + url);
+                    break;
+                case 3:     // 位置
+//                    LocationMessage locationMessage = (LocationMessage) m.getContent();
 //                    if (m.getSenderUserId().equals(yourUserId)) {
-//                        addImage(0, url);
+//                        addLocation(0, locationMessage.getLat(),
+//                                locationMessage.getLng(), locationMessage.getPoi());
 //                    } else {
-//                        addImage(1, url);
+//                        addLocation(1, locationMessage.getLat(),
+//                                locationMessage.getLng(), locationMessage.getPoi());
 //                    }
-//                }
-//            } else if (objectName.equals(CloudManager.MSG_LOCATION_NAME)) {
-//                LocationMessage locationMessage = (LocationMessage) m.getContent();
-//                if (m.getSenderUserId().equals(yourUserId)) {
-//                    addLocation(0, locationMessage.getLat(),
-//                            locationMessage.getLng(), locationMessage.getPoi());
-//                } else {
-//                    addLocation(1, locationMessage.getLat(),
-//                            locationMessage.getLng(), locationMessage.getPoi());
-//                }
-//            }
-//        }
-//    }
+                    break;
+                case 4:
+                    break;
+            }
+
+        }
+    }
 
     /**
      * 查询服务器历史记录
@@ -533,19 +598,18 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
      * 加载自我信息
      */
     private void loadMeInfo() {
+        // 对方的信息
         Intent intent = getIntent();
         yourUserId = intent.getStringExtra(Constants.INTENT_USER_ID);
         yourUserName = intent.getStringExtra(Constants.INTENT_USER_NAME);
         yourUserPhoto = intent.getStringExtra(Constants.INTENT_USER_PHOTO);
+        chatroom_id = intent.getStringExtra(Constants.INTENT_CHATROOM_ID);
 
-        meUserPhoto = new MyMemberInfo().getmUserInfoBean().getAvatar();
-
-        LogUtils.i("yourUserPhoto:" + yourUserPhoto);
-        LogUtils.i("meUserPhoto:" + meUserPhoto);
+        meUserPhoto = SpUtils.getInstance().getString(Constants.SP_USER_AVATAR, "");
 
         //设置标题
         if (!TextUtils.isEmpty(yourUserName)) {
-            getSupportActionBar().setTitle(yourUserName);
+             getSupportActionBar().setTitle(yourUserName);
         }
     }
 
@@ -557,23 +621,25 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
                 if (TextUtils.isEmpty(inputText)) {
                     return;
                 }
-//                CloudManager.getInstance().sendTextMessage(inputText,
-//                        CloudManager.TYPE_TEXT, yourUserId);
                 MessageStruct messageStruct = new MessageStruct();
                 messageStruct.setChatroom_id(chatroom_id);
                 messageStruct.setCode(1);
                 messageStruct.setContent(inputText);
+                messageStruct.setMessage_id(UUID.randomUUID().toString());
                 Gson gson = new Gson();
                 String jsonStr = gson.toJson(messageStruct);
-                SocketIm.Send("04"+jsonStr);
-
-                Log.d("SOCKET", "is_init:" + SocketIm.is_init);
+//                SocketService.sendMsg("04"+jsonStr);    // 发送消息
+                SocketManager.getInstance(this).sendTcpMessage("04"+jsonStr);
+                // 写入数据库
+                String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
+                MessageDaoUtils mMessageDaoUtils = new MessageDaoUtils(this);
+                mMessageDaoUtils.insertMessage(new Message(null, chatroom_id, uid, messageStruct.getMessage_id(), "", messageStruct.getContent(), 1, 0, "wait",1) );
 
                 addText(1, inputText);
-                //清空
+                //清空消息文本框
                 et_input_msg.setText("");
                 break;
-            case R.id.ll_voice:
+            case R.id.ll_voice:         // 语音
 //                VoiceManager.getInstance(this).startSpeak(new RecognizerDialogListener() {
 //                    @Override
 //                    public void onResult(RecognizerResult recognizerResult, boolean b) {
@@ -600,13 +666,13 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
 //                    }
 //                });
                 break;
-            case R.id.ll_camera:
+            case R.id.ll_camera:        // 拍照
 //                FileHelper.getInstance().toCamera(this);
                 break;
-            case R.id.ll_pic:
+            case R.id.ll_pic:           // 图片
 //                FileHelper.getInstance().toAlbum(this);
                 break;
-            case R.id.ll_location:
+            case R.id.ll_location:      // 位置
 //                LocationActivity.startActivity(this, true, 0, 0, "", LOCATION_REQUEST_CODE);
                 break;
         }
@@ -631,7 +697,6 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
      * @param text
      */
     private void addText(int index, String text) {
-        LogUtils.i("ChatA:" + text);
         ChatModel model = new ChatModel();
         if (index == 0) {
             model.setType(TYPE_LEFT_TEXT);
@@ -698,20 +763,40 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         baseAddItem(model);
     }
 
+    // 设置消息为已读
+    private void setMessageRead() {
+        // 更新数据库
+        DaoManager mManager = new DaoManager();
+        mManager.init(this, MessageDao.TABLENAME);
+        List<Message> messageList = mManager.getDaoSession().getMessageDao().queryBuilder().where(MessageDao.Properties.Chatroom_id.eq(chatroom_id)).build().list();
+        for (int i = 0; i < messageList.size(); i++) {
+            Message m = messageList.get(i);
+            m.setIs_read(1);
+            mManager.getDaoSession().getMessageDao().update(m);
+        }
+    }
+
+    // 事件
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent event) {
-        if (!event.getUserId().equals(yourUserId)) {
-            return;
+        // 消息全部设置为已读
+        setMessageRead();
+
+        String me_uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");      // 我的用户ID
+        int index = 0;
+        if (event.getUserId().equals(me_uid)) {
+            index = 1;
         }
+//        Log.d("消息事件", event.getContent());
         switch (event.getType()) {
             case EventManager.FLAG_SEND_TEXT:
-                addText(0, event.getText());
+                addText(index, event.getContent());
                 break;
             case EventManager.FLAG_SEND_IMAGE:
-                addImage(0, event.getImgUrl());
+                addImage(index, event.getImgUrl());
                 break;
             case EventManager.FLAG_SEND_LOCATION:
-                addLocation(0, event.getLa(), event.getLo(), event.getAddress());
+                addLocation(index, event.getLa(), event.getLo(), event.getAddress());
                 break;
         }
     }
@@ -780,7 +865,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_chat_menu:
-//                ChatInfoActivity.startChatInfo(this, yourUserId, CHAT_INFO_REQUEST_CODE);
+                //ChatInfoActivity.startChatInfo(this, yourUserId, CHAT_INFO_REQUEST_CODE);
                 break;
             case R.id.menu_chat_audio:
 //                if (!checkWindowPermissions()) {

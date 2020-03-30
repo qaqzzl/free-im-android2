@@ -6,29 +6,33 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Color;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.qaqzz.framework.base.BaseActivity;
+import com.qaqzz.framework.base.BaseUIActivity;
 import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.utils.LogUtils;
 import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.activities.LoginActivity;
+import com.qaqzz.free_im.api.MemberInfoApi;
 import com.qaqzz.free_im.fragment.ChatRecordFragment;
+import com.qaqzz.free_im.fragment.DynamicFragment;
 import com.qaqzz.free_im.fragment.FriendFragment;
 import com.qaqzz.free_im.fragment.MeFragment;
-import com.qaqzz.free_im.fragment.SquareFragment;
-import com.qaqzz.free_im.http.Util.Util;
-import com.qaqzz.free_im.im.SocketIm;
+import com.qaqzz.free_im.http.api.ApiListener;
+import com.qaqzz.free_im.http.api.ApiUtil;
+import com.qaqzz.free_im.im.SocketService;
+import com.qaqzz.socket.socket.SocketManager;
 
-import java.util.List;
+import org.json.JSONObject;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
-    //聊天
+import cn.jzvd.Jzvd;
+
+public class MainActivity extends BaseUIActivity implements View.OnClickListener {
+    //消息
     private ImageView iv_chat;
     private TextView tv_chat;
     private LinearLayout ll_chat;
@@ -47,7 +51,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView tv_square;
 
     private LinearLayout ll_square;
-    private SquareFragment mSquareFragment = null;
+    private DynamicFragment mSquareFragment = null;
     private FragmentTransaction mSquareTransaction = null;
 
     //我的
@@ -86,17 +90,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void initWidget() {
         super.initWidget();
 
-        // 请求权限
-        requestPermiss();
-
-        // 获取IMEI，国际移动设备标志
-        SpUtils.getInstance().putString(Constants.SP_DEVICEID, Util.getImei(this));
-        Log.d("SOCKET", "获取IMEI，国际移动设备标志: " + Util.getImei(this));
-
-        // im
-        SocketIm socketIm = new SocketIm();
-        socketIm.start();
-
         iv_friend = (ImageView) findViewById(R.id.iv_friend);
         tv_friend = (TextView) findViewById(R.id.tv_friend);
         ll_friend = (LinearLayout) findViewById(R.id.ll_friend);
@@ -119,9 +112,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         ll_me.setOnClickListener(this);
 
         //设置文本
+        tv_chat.setText(getString(R.string.text_main_chat));
         tv_friend.setText(getString(R.string.text_main_friend));
         tv_square.setText(getString(R.string.text_main_square));
-        tv_chat.setText(getString(R.string.text_main_chat));
         tv_me.setText(getString(R.string.text_main_me));
 
         initFragment();
@@ -131,6 +124,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         //检查TOKEN
         checkToken();
+
+        // 启动socket
+        SocketManager.getInstance(this).startTcpConnection();
     }
 
 
@@ -139,7 +135,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      */
     private void initFragment() {
 
-        //聊天
+        //消息
         if (mChatRecordFragment == null) {
             mChatRecordFragment = new ChatRecordFragment();
             mChatRecordTransaction = getSupportFragmentManager().beginTransaction();
@@ -157,7 +153,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         //广场
         if (mSquareFragment == null) {
-            mSquareFragment = new SquareFragment();
+            mSquareFragment = new DynamicFragment();
             mSquareTransaction = getSupportFragmentManager().beginTransaction();
             mSquareTransaction.add(R.id.mMainLayout, mSquareFragment);
             mSquareTransaction.commit();
@@ -178,14 +174,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.ll_chat:
                 checkMainTab(0);
+                Jzvd.releaseAllVideos();        // 关闭视频 , 临时解决方案
                 break;
             case R.id.ll_friend:
                 checkMainTab(1);
+                Jzvd.releaseAllVideos();        // 关闭视频 , 临时解决方案
                 break;
             case R.id.ll_square:
                 checkMainTab(2);
                 break;
             case R.id.ll_me:
+                Jzvd.releaseAllVideos();        // 关闭视频 , 临时解决方案
                 checkMainTab(3);
                 break;
 
@@ -229,7 +228,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     /**
      * 切换主页选项卡
      *
-     * @param index 0：聊天记录
+     * @param index 0：消息记录
      *              1：好友
      *              2：广场
      *              3：我的
@@ -244,10 +243,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 iv_square.setImageResource(R.drawable.img_square);
                 iv_me.setImageResource(R.drawable.img_me);
 
-                tv_friend.setTextColor(Color.BLACK);
-                tv_square.setTextColor(Color.BLACK);
-                tv_chat.setTextColor(getResources().getColor(R.color.colorAccent));
-                tv_me.setTextColor(Color.BLACK);
+                tv_chat.setTextColor(getResources().getColor(R.color.color_bottom_text));
+                tv_friend.setTextColor(getResources().getColor(R.color.color_text));
+                tv_square.setTextColor(getResources().getColor(R.color.color_text));
+                tv_me.setTextColor(getResources().getColor(R.color.color_text));
 
                 break;
             case 1:
@@ -258,23 +257,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 iv_square.setImageResource(R.drawable.img_square);
                 iv_me.setImageResource(R.drawable.img_me);
 
-                tv_friend.setTextColor(getResources().getColor(R.color.colorAccent));
-                tv_square.setTextColor(Color.BLACK);
-                tv_chat.setTextColor(Color.BLACK);
-                tv_me.setTextColor(Color.BLACK);
+                tv_friend.setTextColor(getResources().getColor(R.color.color_bottom_text));
+                tv_square.setTextColor(getResources().getColor(R.color.color_text));
+                tv_chat.setTextColor(getResources().getColor(R.color.color_text));
+                tv_me.setTextColor(getResources().getColor(R.color.color_text));
                 break;
             case 2:
                 showFragment(mSquareFragment);
 
+                iv_chat.setImageResource(R.drawable.img_chat);
                 iv_friend.setImageResource(R.drawable.img_star);
                 iv_square.setImageResource(R.drawable.img_square_p);
-                iv_chat.setImageResource(R.drawable.img_chat);
                 iv_me.setImageResource(R.drawable.img_me);
 
-                tv_friend.setTextColor(Color.BLACK);
-                tv_square.setTextColor(getResources().getColor(R.color.colorAccent));
-                tv_chat.setTextColor(Color.BLACK);
-                tv_me.setTextColor(Color.BLACK);
+                tv_square.setTextColor(getResources().getColor(R.color.color_bottom_text));
+                tv_friend.setTextColor(getResources().getColor(R.color.color_text));
+                tv_chat.setTextColor(getResources().getColor(R.color.color_text));
+                tv_me.setTextColor(getResources().getColor(R.color.color_text));
 
                 break;
             case 3:
@@ -285,11 +284,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 iv_square.setImageResource(R.drawable.img_square);
                 iv_me.setImageResource(R.drawable.img_me_p);
 
-                tv_friend.setTextColor(Color.BLACK);
-                tv_square.setTextColor(Color.BLACK);
-                tv_chat.setTextColor(Color.BLACK);
-                tv_me.setTextColor(getResources().getColor(R.color.colorAccent));
-
+                tv_me.setTextColor(getResources().getColor(R.color.color_bottom_text));
+                tv_friend.setTextColor(getResources().getColor(R.color.color_text));
+                tv_square.setTextColor(getResources().getColor(R.color.color_text));
+                tv_chat.setTextColor(getResources().getColor(R.color.color_text));
                 break;
         }
     }
@@ -304,6 +302,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
 //        Toast.makeText(this, "token:" + token + ", uid:" + uid, Toast.LENGTH_SHORT).show();
         if (!TextUtils.isEmpty(token) && !TextUtils.isEmpty(uid)) {
+            // 请求用户基本信息
+            try{
+                MemberInfoApi apiBase = new MemberInfoApi();
+                apiBase.post(new ApiListener() {
+                    @Override
+                    public void success(ApiUtil api, JSONObject response) {
+                        // 把用户昵称跟用户头像保存下来 \ 保存用户信息
+                        SpUtils.getInstance().putString(Constants.SP_USER_NAME, apiBase.mInfo.getNickname());
+                        SpUtils.getInstance().putString(Constants.SP_USER_AVATAR, apiBase.mInfo.getAvatar());
+                    }
+                    @Override
+                    public void error(ApiUtil api, JSONObject response) {
+
+                    }
+                });
+
+            }catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
         } else {
             Toast.makeText(this,"请登录",Toast.LENGTH_SHORT).show();
@@ -311,21 +328,4 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    /**
-     * 请求权限
-     */
-    private void requestPermiss() {
-        //危险权限
-        request(new OnPermissionsResult() {
-            @Override
-            public void OnSuccess() {
-
-            }
-
-            @Override
-            public void OnFail(List<String> noPermissions) {
-                LogUtils.i("noPermissions:" + noPermissions.toString());
-            }
-        });
-    }
 }

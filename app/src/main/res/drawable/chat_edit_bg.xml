@@ -4,7 +4,7 @@
 <!--圆角-->
 <corners android:radius="2dp"/>
 <!--中间颜色-->
-<solid android:color="@android:color/white"/>
+<solid android:color="#20202E"/>
 <!--边框/颜色-->
 <stroke
     android:width="1dp"

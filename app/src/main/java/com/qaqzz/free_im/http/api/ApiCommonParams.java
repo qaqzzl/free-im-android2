@@ -4,8 +4,8 @@ import android.content.Context;
 import android.text.TextUtils;
 
 
-import com.qaqzz.free_im.base.BaseApp;
-import com.qaqzz.free_im.http.Util.Util;
+import com.qaqzz.framework.utils.Util;
+import com.qaqzz.free_im.BaseApp;
 
 import java.util.HashMap;
 
@@ -43,7 +43,7 @@ public class ApiCommonParams {
 	 */
 	private static String mManufacturer = null;
 
-	private static String mUid = "u01234345";
+	private static String mUid = "";
 
 
 

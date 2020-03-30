@@ -13,7 +13,7 @@ public class MessageEvent {
 
     //文本消息
     private String userId;  //每个消息都应该持有userId
-    private String text;
+    private String content;
 
     //图片消息
     private String imgUrl;
@@ -89,12 +89,12 @@ public class MessageEvent {
         this.userId = userId;
     }
 
-    public String getText() {
-        return text;
+    public String getContent() {
+        return content;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public MessageEvent(int type) {
@@ -110,7 +110,7 @@ public class MessageEvent {
         return "MessageEvent{" +
                 "type=" + type +
                 ", userId='" + userId + '\'' +
-                ", text='" + text + '\'' +
+                ", content='" + content + '\'' +
                 '}';
     }
 }

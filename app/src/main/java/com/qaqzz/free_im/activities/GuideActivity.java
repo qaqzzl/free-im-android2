@@ -14,6 +14,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.qaqzz.framework.base.BaseActivity;
 import com.qaqzz.framework.base.BasePageAdapter;
+import com.qaqzz.framework.base.BaseUIActivity;
 import com.qaqzz.framework.manager.MediaPlayerManager;
 import com.qaqzz.framework.utils.AnimUtils;
 import com.qaqzz.free_im.R;
@@ -26,7 +27,7 @@ import java.util.List;
  * Founder: LiuGuiLin
  * Profile: 引导页
  */
-public class GuideActivity extends BaseActivity implements View.OnClickListener {
+public class GuideActivity extends BaseUIActivity implements View.OnClickListener {
 
     private ImageView iv_music_switch;
     private TextView tv_guide_skip;
