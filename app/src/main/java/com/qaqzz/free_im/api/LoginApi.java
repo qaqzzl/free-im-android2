@@ -1,10 +1,9 @@
 package com.qaqzz.free_im.api;
 
 
-
-import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.free_im.CardContants;
 import com.qaqzz.free_im.bean.LoginBean;
+import com.qaqzz.free_im.http.api.ApiUtil;
 
 import org.json.JSONObject;
 

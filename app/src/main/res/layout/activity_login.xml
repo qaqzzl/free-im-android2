@@ -25,7 +25,7 @@
                 android:layout_height="50dp"
                 android:background="@drawable/login_edit_bg"
                 android:cursorVisible="false"
-                android:hint="@string/text_upload_nickname"
+                android:hint="@string/text_login_phone"
                 android:inputType="phone"
                 android:padding="5dp" />
 

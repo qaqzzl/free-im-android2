@@ -1,11 +1,13 @@
 package com.qaqzz.framework.helper;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -46,50 +48,25 @@ public class UpdateHelper {
         this.mContext = mContext;
     }
 
-    public void updateApp(final OnUpdateAppListener listener) {
-//        BmobManager.getInstance().queryUpdateSet(new FindListener<UpdateSet>() {
-//            @Override
-//            public void done(List<UpdateSet> list, BmobException e) {
-//                if (e == null) {
-//                    if (CommonUtils.isEmpty(list)) {
-//                        UpdateSet updateSet = list.get(0);
-//                        //获取自己的VersionCode
-//                        try {
-//                            int AppCode = mContext.getPackageManager().
-//                                    getPackageInfo(mContext.getPackageName(), 0).versionCode;
-//                            //有更新
-//                            if (listener != null) {
-//                                listener.OnUpdate(updateSet.getVersionCode() > AppCode ? true : false);
-//                            }
-//                            if (updateSet.getVersionCode() > AppCode) {
-//                                //检测到有更新比对版本
-//                                createUpdateDialog(updateSet);
-//                            }
-//                        } catch (PackageManager.NameNotFoundException ex) {
-//                            ex.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }
-//        });
+    public void updateApp(String version_name, String version_download, String version_description) {
+        createUpdateDialog(version_name, version_download, version_description);
     }
 
     /**
      * 更新提示框
      */
-    private void createUpdateDialog(final UpdateSet updateSet) {
+    private void createUpdateDialog(final String version_name, final String version_download, final String version_description) {
         mUpdateView = DialogManager.getInstance().initView(mContext, R.layout.dialog_update_app);
         tv_desc = mUpdateView.findViewById(R.id.tv_update_desc);
         tv_confirm = mUpdateView.findViewById(R.id.tv_confirm);
         tv_cancel = mUpdateView.findViewById(R.id.tv_cancel);
 
-        tv_desc.setText(updateSet.getDesc());
-
+        tv_desc.setText(version_description);
         tv_confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogManager.getInstance().hide(mUpdateView);
-                downloadApk(updateSet);
+                downloadApk(version_download);
             }
         });
         tv_cancel.setOnClickListener(new View.OnClickListener() {
@@ -110,21 +87,34 @@ public class UpdateHelper {
     }
 
     /**
+     *
+     * @param path 文件夹路径
+     */
+    public static void isExist(String path) {
+        File file = new File(path);
+        //判断文件夹是否存在,如果不存在则创建文件夹
+        if (!file.exists()) {
+            file.mkdir();
+        }
+    }
+
+    /**
      * 下载
      */
-    private void downloadApk(UpdateSet updateSet) {
-        if (TextUtils.isEmpty(updateSet.getPath())) {
-            return;
-        }
-
-        final String filePath = "/sdcard/Meet/" + System.currentTimeMillis() + ".apk";
+    public void downloadApk(String version_download) {
+//        String getPath = Environment.getDataDirectory().getPath();
+//        String getPath = mContext.getFilesDir().getPath();
+        String sdcardPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/free_im";
+        isExist(sdcardPath);
+        final String filePath = sdcardPath +"/"+ System.currentTimeMillis() + ".apk";
 
         if (mProgressDialog != null) {
             mProgressDialog.show();
         }
 
         //开始下载：
-        HttpManager.getInstance().download(updateSet.getPath(), filePath, new HttpManager.OnDownloadListener() {
+        LogUtils.i("onDownload version_download:" + version_download);
+        HttpManager.getInstance().download(version_download, filePath, new HttpManager.OnDownloadListener() {
             @Override
             public void onDownloadSuccess(String path) {
                 mProgressDialog.dismiss();
@@ -148,10 +138,6 @@ public class UpdateHelper {
         });
     }
 
-    public interface OnUpdateAppListener {
-        void OnUpdate(boolean isUpdate);
-    }
-
     /**
      * 安装Apk
      *
@@ -159,15 +145,15 @@ public class UpdateHelper {
      * @return
      */
     public void installApk(String filePath) {
-//        try{
-//            Intent intent = new Intent(Intent.ACTION_VIEW);
-//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//            intent.setDataAndType(Uri.parse("file://" + filePath), "application/vnd.android.package-archive");
-//            mContext.startActivity(intent);
-//        }catch (Exception e){
-//            LogUtils.e("installApk:" + e.toString());
-//            e.toString();
-//        }
+        try{
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(Uri.parse("file://" + filePath), "application/vnd.android.package-archive");
+            mContext.startActivity(intent);
+        }catch (Exception e){
+            LogUtils.e("installApk:" + e.toString());
+            e.toString();
+        }
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         File apkFile = new File(filePath);

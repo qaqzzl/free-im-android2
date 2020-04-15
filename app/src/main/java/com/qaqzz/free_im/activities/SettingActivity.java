@@ -1,11 +1,13 @@
 package com.qaqzz.free_im.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,16 +19,21 @@ import android.widget.Toast;
 
 import com.qaqzz.framework.base.BaseBackActivity;
 import com.qaqzz.framework.entity.Constants;
+import com.qaqzz.framework.event.EventManager;
 import com.qaqzz.framework.helper.UpdateHelper;
 import com.qaqzz.framework.manager.DialogManager;
 import com.qaqzz.framework.utils.LanguaueUtils;
+import com.qaqzz.framework.utils.PackageUtils;
 import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.framework.view.DialogView;
-import com.qaqzz.free_im.MainActivity;
+import com.qaqzz.framework.view.UpdataDialog;
 import com.qaqzz.free_im.R;
+import com.qaqzz.free_im.api.AppNewVersionGetApi;
+import com.qaqzz.free_im.http.api.ApiListener;
+import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.socket.socket.SocketManager;
 
-import java.net.ServerSocket;
+import org.json.JSONObject;
 
 /**
  * FileName: SettingActivity
@@ -65,11 +72,9 @@ public class SettingActivity extends BaseBackActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        initView();
     }
 
-    private void initView() {
+    protected void initWidget() {
 
         sw_app_tips = (Switch) findViewById(R.id.sw_app_tips);
         rl_app_tips = (RelativeLayout) findViewById(R.id.rl_app_tips);
@@ -96,6 +101,7 @@ public class SettingActivity extends BaseBackActivity implements View.OnClickLis
         btn_logout.setOnClickListener(this);
         rl_clear_cache.setOnClickListener(this);
         rl_app_tips.setOnClickListener(this);
+        sw_app_tips.setOnClickListener(this);
         rl_update_languaue.setOnClickListener(this);
         rl_check_permissions.setOnClickListener(this);
         rl_check_version.setOnClickListener(this);
@@ -121,7 +127,29 @@ public class SettingActivity extends BaseBackActivity implements View.OnClickLis
     }
 
     private void updateApp() {
-        mUpdateHelper.updateApp(isUpdate -> tv_new_version.setVisibility(isUpdate ? View.VISIBLE : View.GONE));
+        Context mContext = this;
+        try {
+            AppNewVersionGetApi apiBase = new AppNewVersionGetApi();
+            apiBase.post(new ApiListener() {
+                @Override
+                public void success(ApiUtil api, JSONObject response) {
+                    int version_code = PackageUtils.getVersionCode(mContext);
+                    if (version_code < apiBase.mInfo.getVersion_code()) {
+                        mUpdateHelper.updateApp(apiBase.mInfo.getVersion_name(),
+                                apiBase.mInfo.getVersion_download(),
+                                apiBase.mInfo.getVersion_description());
+                    }
+                }
+                @Override
+                public void error(ApiUtil api, JSONObject response) {
+
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+
     }
 
     private void initLanguaueDialog() {
@@ -154,7 +182,7 @@ public class SettingActivity extends BaseBackActivity implements View.OnClickLis
             return;
         }
         SpUtils.getInstance().putInt(Constants.SP_LANGUAUE, index);
-        //EventManager.post(EventManager.EVENT_RUPDATE_LANGUAUE);
+        EventManager.post(EventManager.EVENT_RUPDATE_LANGUAUE);
         Toast.makeText(this, "Test Model , Reboot App ", Toast.LENGTH_SHORT).show();
         //暂时先重启处理
         finishAffinity();
@@ -164,6 +192,7 @@ public class SettingActivity extends BaseBackActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.sw_app_tips:
             case R.id.rl_app_tips:
                 isTips = !isTips;
                 sw_app_tips.setChecked(isTips);
@@ -171,9 +200,10 @@ public class SettingActivity extends BaseBackActivity implements View.OnClickLis
                 break;
             case R.id.rl_chat_theme:
                 //startActivity(new Intent(this,ChatThemeActivity.class));
+                Toast.makeText(this, getString(R.string.app_not_yet_developed), Toast.LENGTH_LONG).show();
                 break;
             case R.id.rl_clear_cache:
-
+                Toast.makeText(this, getString(R.string.cache_clear_success), Toast.LENGTH_LONG).show();
                 break;
             case R.id.rl_update_languaue:
                 DialogManager.getInstance().show(mLanguaueDialog);
@@ -196,7 +226,7 @@ public class SettingActivity extends BaseBackActivity implements View.OnClickLis
                 logout();
                 break;
             case R.id.rl_app_show:
-                Uri uri = Uri.parse("https://www.baidu.com/");
+                Uri uri = Uri.parse("https://freeim.qaqzz.com/");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
                 break;

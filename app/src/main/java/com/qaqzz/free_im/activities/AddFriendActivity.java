@@ -1,7 +1,6 @@
 package com.qaqzz.free_im.activities;
 
 import android.Manifest;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -68,14 +67,12 @@ public class AddFriendActivity extends BaseBackActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        initView();
     }
 
     /**
      * 初始化View
      */
-    private void initView() {
+    protected void initWidget() {
 
         include_empty_view = findViewById(R.id.include_empty_view);
 
@@ -196,7 +193,6 @@ public class AddFriendActivity extends BaseBackActivity implements View.OnClickL
                         mSearchResultView.setVisibility(View.VISIBLE);
                         for (int i=0; i < search_list.size(); i++ ) {
                             SearchFriendBean.SearchListBean m = search_list.get(i);
-                            LogUtils.i("getNickname" + m.getNickname());
                             addTitle(getString(R.string.text_add_friend_title));
                             addContent(m);
                             mAddFriendAdapter.notifyDataSetChanged();
@@ -277,8 +273,8 @@ public class AddFriendActivity extends BaseBackActivity implements View.OnClickL
         model.setType(TYPE_CONTENT);
         model.setUserId(m.getMember_id());
         model.setPhoto(m.getAvatar());
-        model.setSex(m.getGender()=="m"?false:true);
-//        model.setAge(m.getAge());
+        model.setSex(m.getGender().equals("m")?false:true);
+        model.setAge(m.getAge());
         model.setNickName(m.getNickname());
         model.setDesc(m.getSignature());
         mList.add(model);

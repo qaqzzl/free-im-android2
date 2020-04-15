@@ -82,7 +82,7 @@ public class SocketManager {
     public void startTcpConnection() {
         String ip = Config.TCP_IP;
         String port = Config.TCP_PORT;
-        if (tcpSocket == null) {// 保证收到消息后，只创建一次
+        if (tcpSocket == null) {// 保证只创建一次
             tcpSocket = new TCPSocket(mContext);
             tcpSocket.startTcpSocket(ip, port);
 
@@ -97,6 +97,8 @@ public class SocketManager {
                     AuthMessage.setAccess_token(token);
                     AuthMessage.setUser_id(uid);
                     AuthMessage.setDevice_id(device_id);
+                    AuthMessage.setClient_type("android");
+                    AuthMessage.setDevice_type("mobile");
 
                     // 连接认证
                     Gson gson = new Gson();
@@ -108,7 +110,8 @@ public class SocketManager {
                 }
 
                 @Override
-                public void onFailed(int errorCode) {// tcp 异常处理
+
+                public void onFailed(int errorCode) { // tcp 异常处理
                     switch (errorCode) {
                         case Config.ErrorCode.CREATE_TCP_ERROR:
                             stopSocket();

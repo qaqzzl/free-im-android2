@@ -3,7 +3,6 @@ package com.qaqzz.free_im.http.api;
 import android.content.Context;
 import android.text.TextUtils;
 
-
 import com.qaqzz.framework.utils.Util;
 import com.qaqzz.free_im.BaseApp;
 

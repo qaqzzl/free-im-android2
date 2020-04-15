@@ -55,7 +55,7 @@
                     android:layout_height="15dp"
                     android:background="@drawable/img_red_point"
                     android:gravity="center"
-                    android:text="3"
+                    android:text="1"
                     android:textColor="@android:color/white"
                     android:textSize="10sp"
                     android:textStyle="bold" />

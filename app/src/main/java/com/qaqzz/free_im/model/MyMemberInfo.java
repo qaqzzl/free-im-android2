@@ -1,7 +1,5 @@
 package com.qaqzz.free_im.model;
 
-import com.qaqzz.framework.helper.GlideHelper;
-import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.api.MemberInfoApi;
 import com.qaqzz.free_im.bean.MemberInfoBean;
 import com.qaqzz.free_im.http.api.ApiListener;

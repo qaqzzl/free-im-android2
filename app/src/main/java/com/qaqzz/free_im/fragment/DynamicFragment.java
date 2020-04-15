@@ -8,21 +8,26 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.qaqzz.framework.adapter.CommonAdapter;
 import com.qaqzz.framework.adapter.CommonViewHolder;
 import com.qaqzz.framework.base.BaseFragment;
 import com.qaqzz.framework.utils.CommonUtils;
+import com.qaqzz.framework.view.LoadingDialog;
 import com.qaqzz.framework.view.VideoJzvdStd;
 import com.qaqzz.free_im.R;
 import com.qaqzz.free_im.activities.DynamicPublishActivity;
@@ -31,9 +36,12 @@ import com.qaqzz.free_im.api.DynamicListApi;
 import com.qaqzz.free_im.bean.DynamicListBean;
 import com.qaqzz.free_im.http.api.ApiListener;
 import com.qaqzz.free_im.http.api.ApiUtil;
+
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import cn.jzvd.Jzvd;
 
 
@@ -45,15 +53,15 @@ import cn.jzvd.Jzvd;
 public class DynamicFragment extends BaseFragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     /**
-     * 1.设计并且实现云数据库 SquareSet
-     * 2.实现我们的媒体发送 PsuhSquareActivity
-     * 3.实现列表 并且实现我们的文本和图片的发送
+     * .实现列表 并且实现我们的文本和图片的发送
      */
+    private LoadingDialog loadingDialog;
+
 
     private static final int REQUEST_CODE = 1000;
 
     private ImageView iv_push;
-    private RecyclerView mSquareView;
+    private RecyclerView mDynamicView;
     private SwipeRefreshLayout mSquareSwipeLayout;
     private View item_empty_view;
 
@@ -63,10 +71,22 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
     private List<DynamicListBean.ListBean> mList = new ArrayList<>();
     private CommonAdapter<DynamicListBean.ListBean> mDynamicAdapter;
 
+    // 分页
+    private int current_page = 1;
+    private final int per_page = 10;
+    // 判断是否加载中
+    private boolean isLoading = false;
+    // 最后一个条目位置
+    private LinearLayoutManager mLayoutManager;
+    private static int lastVisibleItem = 0;
+    // 若是上拉加载更多的网络请求 则不需要删除数据
+    private boolean isLoadingMore = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_square, null);
         initView(view);
+
         return view;
     }
 
@@ -76,8 +96,10 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
      * @param view
      */
     private void initView(final View view) {
+        loadingDialog = LoadingDialog.getInstance(this.getContext());
+
         iv_push = view.findViewById(R.id.iv_push);
-        mSquareView = view.findViewById(R.id.mSquareView);
+        mDynamicView = view.findViewById(R.id.mSquareView);
         mSquareSwipeLayout = view.findViewById(R.id.mSquareSwipeLayout);
         item_empty_view = view.findViewById(R.id.item_empty_view);
         fb_squaue_top = view.findViewById(R.id.fb_squaue_top);
@@ -86,11 +108,11 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
         fb_squaue_top.setOnClickListener(this);
         mSquareSwipeLayout.setOnRefreshListener(this);
 
-        mSquareView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mSquareView.addItemDecoration(new DividerItemDecoration(getActivity(),
+        mDynamicView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mDynamicView.addItemDecoration(new DividerItemDecoration(getActivity(),
                 DividerItemDecoration.VERTICAL));
         //取消动画
-        ((SimpleItemAnimator) mSquareView.getItemAnimator()).setSupportsChangeAnimations(false);
+        ((SimpleItemAnimator) mDynamicView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         Context context = this.getContext();
 
@@ -106,7 +128,7 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
                 //loadMeInfo(model.getUserId(), viewHolder);
                 viewHolder.setImageUrl(getActivity(), R.id.iv_photo, model.getAvatar(), 50, 50);
                 viewHolder.setText(R.id.tv_nickname, model.getNickname());
-//                viewHolder.setText(R.id.tv_square_age, imUser.getAge() + getString(R.string.text_search_age));
+                viewHolder.setText(R.id.tv_square_age, model.getAge() + getString(R.string.text_search_age));
 //                viewHolder.setText(R.id.tv_square_constellation, constellation);
 //                viewHolder.setVisibility(R.id.tv_square_constellation, View.VISIBLE);
 //                viewHolder.setText(R.id.tv_square_hobby, getString(R.string.text_squate_love) + hobby);
@@ -163,10 +185,25 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
                 return R.layout.layou_square_item;
             }
         });
-        mSquareView.setAdapter(mDynamicAdapter);
+        mDynamicView.setAdapter(mDynamicAdapter);
 
         //监听列表滑动
-        mSquareView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mDynamicView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            //滚动监听
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                    RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+                    //判断是当前layoutManager是否为LinearLayoutManager
+                    // 只有LinearLayoutManager才有查找第一个和最后一个可见view位置的方法
+                    if (layoutManager instanceof LinearLayoutManager) {
+                        mLayoutManager = (LinearLayoutManager) layoutManager;
+                        //获取最后一个可见view的位置
+                        lastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
+                        System.out.println(lastVisibleItem);
+                    }
+            }
+
             @SuppressLint("RestrictedApi")
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -181,6 +218,23 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
                         }
                     }
                 }
+                // 分页
+                if(!isLoading){        // 若不是加载更多 才 加载
+                    // 在newState为滑到底部时
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        int index = 3;      // 正确值应该是2  改成3 实现拉到底部的上一条就加载
+                        // 如果没有隐藏footView，那么最后一个条目的位置(带数据）就比我们的getItemCount少1
+                        if (!mDynamicAdapter.isFadeTips() && lastVisibleItem + index - 1 >= mDynamicAdapter.getItemCount()) {
+                            // 然后调用updateRecyclerview方法更新RecyclerView
+                            loadSquare();
+                        }
+                        // 如果隐藏了提示条，我们又上拉加载时，那么最后一个条目(带数据）就要比getItemCount要少2
+                        if (mDynamicAdapter.isFadeTips() && lastVisibleItem + index >= mDynamicAdapter.getItemCount()) {
+                            // 然后调用updateRecyclerview方法更新RecyclerView
+                            loadSquare();    // 要调
+                        }
+                    }
+                }
 
                 // RecyclerView划出屏幕释放JZ，同时也是不开启列表划出显示小窗
                 recyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
@@ -188,7 +242,6 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
                     public void onChildViewAttachedToWindow(View view) {
 
                     }
-
                     @Override
                     public void onChildViewDetachedFromWindow(View view) {
 //                        Jzvd jzvd = view.findViewById(R.id.jz_video);
@@ -201,9 +254,9 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
 //                        }
                     }
                 });
-
             }
         });
+
     }
 
     @Override
@@ -239,7 +292,7 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.fb_squaue_top:
-                mSquareView.smoothScrollToPosition(0);
+                mDynamicView.smoothScrollToPosition(0);
                 break;
         }
     }
@@ -249,6 +302,10 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE) {
                 //刷新
+                if (mList.size() > 0) {
+                    mList.clear();
+                }
+                current_page = 1;
                 loadSquare();
             }
         }
@@ -259,27 +316,38 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
      * 加载数据
      */
     private void loadSquare() {
-        mSquareSwipeLayout.setRefreshing(true);
+        isLoading = true;
+        Log.d("进入loadSquare","page: " + String.valueOf(current_page));
         Context context = this.getContext();
         //发布列表
         try{
-            DynamicListApi apiBase = new DynamicListApi("1","10");
+            String page_str = String.valueOf(current_page);
+            String perpage_str = String.valueOf(per_page);
+            DynamicListApi apiBase = new DynamicListApi(page_str, perpage_str);
+
             apiBase.post(new ApiListener() {
                 @Override
                 public void success(ApiUtil api, JSONObject response) {
                     mSquareSwipeLayout.setRefreshing(false);
                     List<DynamicListBean.ListBean> list = apiBase.mInfo.getList();
+                    if (isLoadingMore && mList.size() > 0) {
+                        mList.clear();
+                    }
                     if (CommonUtils.isEmpty(list)) {
-                        mSquareView.setVisibility(View.VISIBLE);
+                        mDynamicView.setVisibility(View.VISIBLE);
                         item_empty_view.setVisibility(View.GONE);
-                        if (mList.size() > 0) {
-                            mList.clear();
-                        }
                         mList.addAll(list);
                         mDynamicAdapter.notifyDataSetChanged();
+                        isLoadingMore = false;
+                        isLoading = false;
+                        current_page++;
                     } else {
-                        mSquareView.setVisibility(View.GONE);
-                        item_empty_view.setVisibility(View.VISIBLE);
+                        if (mList.size() == 0) {
+                            mDynamicView.setVisibility(View.GONE);
+                            item_empty_view.setVisibility(View.VISIBLE);
+                        } else {
+                            // 没有跟多数据了
+                        }
                     }
                 }
                 public void error(ApiUtil api, JSONObject response) {
@@ -289,7 +357,7 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
                         ex.printStackTrace();
                     }
                     mSquareSwipeLayout.setRefreshing(false);
-                    mSquareView.setVisibility(View.GONE);
+                    mDynamicView.setVisibility(View.GONE);
                     item_empty_view.setVisibility(View.VISIBLE);
                     Toast.makeText(context, "加载失败" , Toast.LENGTH_SHORT).show();
                 }
@@ -300,7 +368,11 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
     }
 
     @Override
+    // 上拉刷新
     public void onRefresh() {
+        isLoadingMore = true;
+        current_page = 1;
         loadSquare();
     }
+
 }

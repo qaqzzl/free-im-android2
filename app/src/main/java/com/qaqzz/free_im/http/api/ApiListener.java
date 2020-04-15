@@ -1,9 +1,6 @@
 package com.qaqzz.free_im.http.api;
 
 
-import com.qaqzz.framework.entity.Constants;
-import com.qaqzz.framework.utils.SpUtils;
-
 import org.json.JSONObject;
 
 public class ApiListener {

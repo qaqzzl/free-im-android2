@@ -1,7 +1,5 @@
 apply plugin: 'com.android.application'
 
-apply plugin: 'org.greenrobot.greendao' // 应用插件
-
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -12,10 +10,32 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // 目前市面上绝大部分的CPU架构都是 ARMv7/ARMv8，所以可以在gradle中加入配置，只保留v7,v8。
+        // 甚至只保留 armeabi-v7a ，微信大佬就这么干的！
+        ndk {
+            //"armeabi", "x86","x86_64"
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
     }
     buildTypes {
+        debug {
+            //自定义Gradle常量
+            buildConfigField("String","HTTP_SERVER","\"http://192.168.0.108:8066\"")
+            buildConfigField("String","SOCKET_SERVER","\"192.168.0.108\"")
+            buildConfigField("String","SOCKET_SERVER_PORT","\"1208\"")
+            buildConfigField("boolean","LOG_DEBUG","true")
+            buildConfigField("String","LOG_TAG","\"Meet\"")
+            buildConfigField("String","SP_NAME","\"Config\"")
+        }
         release {
-            minifyEnabled false
+            buildConfigField("String","HTTP_SERVER","\"http://101.132.107.212:8066\"")
+            buildConfigField("String","SOCKET_SERVER","\"101.132.107.212\"")
+            buildConfigField("String","SOCKET_SERVER_PORT","\"1208\"")
+            buildConfigField "boolean", "LOG_DEBUG", "false" //不显示log
+//            minifyEnabled true   //开启混淆
+//            shrinkResources true  //移除无用资源
+//            zipAlignEnabled true  //Zipalign优化
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -69,11 +89,3 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 }
 
-greendao {
-    // 指定数据库schema版本号，迁移等操作会用到
-    schemaVersion 1
-    // 设置生成数据库文件的目录，默认是在build中，可以将生成的文件放到我们的java目录中
-    targetGenDir 'src/main/java'
-    // 设置生成的数据库相关文件的包名，默认为entity所在的包名
-    //daoPackage 'com.shufeng.greendao.gen'
-}

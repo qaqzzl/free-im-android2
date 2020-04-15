@@ -55,8 +55,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             Manifest.permission.RECORD_AUDIO,
             Manifest.permission.CALL_PHONE,
             Manifest.permission.ACCESS_FINE_LOCATION,
-
-
     };
 
     //保存没有同意的权限

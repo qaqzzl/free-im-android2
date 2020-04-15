@@ -3,7 +3,6 @@ package com.qaqzz.free_im.api;
 import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.CardContants;
-import com.qaqzz.free_im.bean.BaseBean;
 import com.qaqzz.free_im.bean.QiniuUploadTokenBase;
 import com.qaqzz.free_im.http.api.ApiUtil;
 

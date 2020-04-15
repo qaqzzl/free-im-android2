@@ -17,7 +17,7 @@ public class AddFriendModel {
     private String userId;
     private String photo;
     private boolean sex;
-    private int age;
+    private String age;
     private String nickName;
     private String desc;
 
@@ -66,11 +66,11 @@ public class AddFriendModel {
         this.sex = sex;
     }
 
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 

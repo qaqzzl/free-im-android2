@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
+    android:background="@color/colorForeground"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -10,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="5dp"
-        android:background="@android:color/white"
+        android:background="@color/color_background"
         android:paddingLeft="15dp"
         android:paddingRight="15dp">
 
@@ -19,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="@string/text_setting_systemui_tips"
-            android:textColor="@android:color/black" />
+            android:textColor="@color/color_text" />
 
         <Switch
             android:id="@+id/sw_app_tips"
@@ -35,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="5dp"
-        android:background="@android:color/white"
+        android:background="@color/color_background"
         android:paddingLeft="15dp"
         android:paddingRight="15dp">
 
@@ -44,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="聊天背景"
-            android:textColor="@android:color/black" />
+            android:textColor="@color/color_text" />
 
     </RelativeLayout>
 
@@ -53,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="5dp"
-        android:background="@android:color/white"
+        android:background="@color/color_background"
         android:paddingLeft="15dp"
         android:paddingRight="15dp">
 
@@ -62,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="@string/text_setting_clear_cache"
-            android:textColor="@android:color/black" />
+            android:textColor="@color/color_text" />
 
         <TextView
             android:id="@+id/tv_cache_size"
@@ -70,6 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:textColor="@color/color_text"
             android:text="0 MB" />
 
     </RelativeLayout>
@@ -79,7 +81,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="5dp"
-        android:background="@android:color/white"
+        android:background="@color/color_background"
         android:paddingLeft="15dp"
         android:paddingRight="15dp">
 
@@ -96,7 +98,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/text_setting_update_languaue"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/color_text" />
 
             <TextView
 
@@ -105,7 +107,8 @@
                 android:layout_centerVertical="true"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="更换语言将重启App"
+                android:textColor="@color/color_text"
+                android:text="@string/text_setting_description"
                 android:textSize="12dp" />
 
         </LinearLayout>
@@ -116,6 +119,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:textColor="@color/color_text"
             android:text="中文" />
 
     </RelativeLayout>
@@ -125,7 +129,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="5dp"
-        android:background="@android:color/white"
+        android:background="@color/color_background"
         android:paddingLeft="15dp"
         android:paddingRight="15dp">
 
@@ -134,7 +138,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="@string/text_setting_check_permissions"
-            android:textColor="@android:color/black" />
+            android:textColor="@color/color_text" />
 
     </RelativeLayout>
 
@@ -143,7 +147,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="5dp"
-        android:background="@android:color/white"
+        android:background="@color/color_background"
         android:paddingLeft="15dp"
         android:paddingRight="15dp">
 
@@ -152,7 +156,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="App展示页面"
-            android:textColor="@android:color/black" />
+            android:textColor="@color/color_text" />
 
     </RelativeLayout>
 
@@ -161,7 +165,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="5dp"
-        android:background="@android:color/white"
+        android:background="@color/color_background"
         android:paddingLeft="15dp"
         android:paddingRight="15dp">
 
@@ -170,7 +174,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="@string/text_setting_version"
-            android:textColor="@android:color/black" />
+            android:textColor="@color/color_text"  />
 
         <TextView
             android:id="@+id/tv_new_version"
@@ -190,6 +194,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:textColor="@color/color_text"
             android:text="V1.0" />
 
     </RelativeLayout>

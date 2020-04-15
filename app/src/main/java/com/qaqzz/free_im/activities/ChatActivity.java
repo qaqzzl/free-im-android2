@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,27 +22,20 @@ import com.qaqzz.framework.base.BaseBackActivity;
 import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.event.EventManager;
 import com.qaqzz.framework.event.MessageEvent;
-import com.qaqzz.framework.gson.TextBean;
 import com.qaqzz.framework.helper.FileHelper;
-import com.qaqzz.framework.helper.GlideHelper;
 import com.qaqzz.framework.utils.LogUtils;
 import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.R;
 import com.qaqzz.free_im.api.FriendIdGetChatroomIdApi;
-import com.qaqzz.free_im.api.MemberInfoApi;
-import com.qaqzz.free_im.database.ChatRecord;
-import com.qaqzz.free_im.database.ChatRecordDao;
-import com.qaqzz.free_im.database.DaoManager;
-import com.qaqzz.free_im.database.Message;
-import com.qaqzz.free_im.database.MessageDao;
-import com.qaqzz.free_im.database.MessageDaoUtils;
+
 import com.qaqzz.free_im.http.api.ApiListener;
 import com.qaqzz.free_im.http.api.ApiUtil;
-import com.qaqzz.free_im.im.AuthMessageStruct;
-import com.qaqzz.free_im.im.MessageStruct;
-import com.qaqzz.free_im.im.SocketIm;
-import com.qaqzz.free_im.im.SocketService;
-import com.qaqzz.free_im.model.MyMemberInfo;
+import com.qaqzz.socket.bean.MessageBean;
+import com.qaqzz.socket.database.ChatRecord;
+import com.qaqzz.socket.database.Dao;
+import com.qaqzz.socket.database.Message;
+import com.qaqzz.socket.database.MessageDao;
+import com.qaqzz.socket.database.model.ChatRecordModel;
 import com.qaqzz.socket.socket.SocketManager;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -51,10 +43,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -413,7 +402,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                         //查询聊天室消息
                         queryMessage();
 
-                        // 聊天室记录
+                        // 聊天室会话记录
                         chatRecord();
 
                         // 消息全部设置为已读
@@ -432,7 +421,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
             //查询聊天室消息
             queryMessage();
 
-            // 聊天室记录
+            // 聊天室会话记录
             chatRecord();
 
             // 消息全部设置为已读
@@ -486,33 +475,23 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
      * 查询本地聊天记录
      */
     private void queryMessage() {
-        DaoManager mManager = DaoManager.getInstance();
-        mManager.init(this, MessageDao.TABLENAME);
-        List<Message> messages = mManager.getDaoSession().getMessageDao().queryBuilder()
+        MessageDao messageDao = Dao.getInstances(this).getDaoSession().getMessageDao();
+        List<Message> messages = messageDao.queryBuilder()
                 .where(MessageDao.Properties.Chatroom_id.eq(chatroom_id))
 //                .where(MessageDao.Properties.Message_status.eq("success"))
-                .orderAsc(MessageDao.Properties._id).list();
+                .orderAsc(MessageDao.Properties.Message_send_time).list();
         parsingListMessage(messages);
 
 
     }
 
-    // 聊天室记录
+    // 聊天室会话记录
     private void chatRecord() {
         // 记录聊天会话
-        DaoManager mManager = new DaoManager();
-//        mManager = mManager.getInstance();
-        mManager.init(this, ChatRecordDao.TABLENAME);
         Long timestamp = System.currentTimeMillis();//获取系统的当前时间戳
-        // 判断是否存在
-        ChatRecord mChatRecord = mManager.getDaoSession().getChatRecordDao().queryBuilder().where(ChatRecordDao.Properties.Chatroom_id.eq(chatroom_id)).build().unique();
-        if (mChatRecord != null) {
-            mChatRecord.setLast_open_time(timestamp.intValue());
-            mManager.getDaoSession().getChatRecordDao().update(mChatRecord);
-        } else {
-            mManager.getDaoSession().getChatRecordDao().insert(new ChatRecord(null, chatroom_id, timestamp.intValue(), "common", yourUserPhoto, yourUserName));
-        }
-
+        ChatRecordModel.getInstance(this).record(new ChatRecord(
+                null, chatroom_id, timestamp, "ordinary", yourUserPhoto, yourUserName,0,null,timestamp
+        ));
     }
 
     /**
@@ -621,19 +600,19 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 if (TextUtils.isEmpty(inputText)) {
                     return;
                 }
-                MessageStruct messageStruct = new MessageStruct();
+                MessageBean messageStruct = new MessageBean();
                 messageStruct.setChatroom_id(chatroom_id);
                 messageStruct.setCode(1);
                 messageStruct.setContent(inputText);
                 messageStruct.setMessage_id(UUID.randomUUID().toString());
                 Gson gson = new Gson();
                 String jsonStr = gson.toJson(messageStruct);
-//                SocketService.sendMsg("04"+jsonStr);    // 发送消息
+                // 发送消息
                 SocketManager.getInstance(this).sendTcpMessage("04"+jsonStr);
                 // 写入数据库
                 String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-                MessageDaoUtils mMessageDaoUtils = new MessageDaoUtils(this);
-                mMessageDaoUtils.insertMessage(new Message(null, chatroom_id, uid, messageStruct.getMessage_id(), "", messageStruct.getContent(), 1, 0, "wait",1) );
+                MessageDao messageDao = Dao.getInstances(this).getDaoSession().getMessageDao();
+                messageDao.insert(new Message(null, chatroom_id, uid, messageStruct.getMessage_id(), "", messageStruct.getContent(), 1, 0, "wait",1) );
 
                 addText(1, inputText);
                 //清空消息文本框
@@ -765,14 +744,13 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
 
     // 设置消息为已读
     private void setMessageRead() {
-        // 更新数据库
-        DaoManager mManager = new DaoManager();
-        mManager.init(this, MessageDao.TABLENAME);
-        List<Message> messageList = mManager.getDaoSession().getMessageDao().queryBuilder().where(MessageDao.Properties.Chatroom_id.eq(chatroom_id)).build().list();
+        // 更新消息数据库
+        MessageDao messageDao = Dao.getInstances(this).getDaoSession().getMessageDao();
+        List<Message> messageList = messageDao.queryBuilder().where(MessageDao.Properties.Chatroom_id.eq(chatroom_id)).build().list();
         for (int i = 0; i < messageList.size(); i++) {
             Message m = messageList.get(i);
             m.setIs_read(1);
-            mManager.getDaoSession().getMessageDao().update(m);
+            messageDao.update(m);
         }
     }
 

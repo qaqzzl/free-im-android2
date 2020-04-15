@@ -3,9 +3,11 @@
     <string name="app_name">Free自由</string>
 
     <string name="app_index_text">相遇总是美好的</string>
-
-    <string name="text_main_star">星球</string>
-    <string name="text_main_square">动态</string>
+    <string name="app_not_yet_developed">功能暂未开发</string>
+    <string name="cache_clear_success">缓存清除成功</string>
+    <string name="app_friend_qrcode">扫一扫二维码，加我好友</string>
+    <string name="text_main_friend">好友</string>
+    <string name="text_main_dynamic">动态</string>
     <string name="text_main_chat">消息</string>
     <string name="text_main_me">我的</string>
 
@@ -14,7 +16,7 @@
     <string name="text_guide_pager_2">我们在黑夜中寻找光明</string>
     <string name="text_guide_pager_3">如果遇见，请面带微笑</string>
 
-    <string name="text_login_phone">电话号码</string>
+    <string name="text_login_phone">手机号码</string>
     <string name="text_login_code">验证码</string>
     <string name="text_login_password">密码</string>
     <string name="text_login_send">发送</string>
@@ -24,6 +26,7 @@
     <string name="text_login_phone_null">电话号码不能为空</string>
     <string name="text_login_pw_null">密码不能为空</string>
     <string name="text_login_code_null">验证码不能为空</string>
+    <string name="text_login_nickname_null">用户名不能为空</string>
     <string name="text_login_now_login_text">正在登陆..</string>
 
     <string name="text_update_nickname_null">昵称不能为空</string>
@@ -135,6 +138,7 @@
     <string name="text_setting_version">版本号</string>
     <string name="text_setting_zh">中文</string>
     <string name="text_setting_en">English</string>
+    <string name="text_setting_description">更换语言将重启App</string>
     <string name="text_setting_logout">退出登录</string>
     <string name="text_share_download">下载到相册</string>
 

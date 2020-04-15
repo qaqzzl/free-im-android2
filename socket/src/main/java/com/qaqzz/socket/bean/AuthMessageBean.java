@@ -10,6 +10,24 @@ public class AuthMessageBean {
     private String device_id;
     private String user_id;
     private String access_token;
+    private String device_type;
+    private String client_type;
+
+    public String getDevice_type() {
+        return device_type;
+    }
+
+    public void setDevice_type(String device_type) {
+        this.device_type = device_type;
+    }
+
+    public String getClient_type() {
+        return client_type;
+    }
+
+    public void setClient_type(String client_type) {
+        this.client_type = client_type;
+    }
 
     public String getDevice_id() {
         return device_id;

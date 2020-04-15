@@ -1,49 +1,48 @@
 package com.qaqzz.free_im.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.gson.Gson;
 import com.qaqzz.framework.adapter.CommonAdapter;
 import com.qaqzz.framework.adapter.CommonViewHolder;
 import com.qaqzz.framework.base.BaseFragment;
-import com.qaqzz.framework.entity.Constants;
-import com.qaqzz.framework.event.EventManager;
 import com.qaqzz.framework.event.MessageEvent;
+import com.qaqzz.framework.manager.DialogManager;
 import com.qaqzz.framework.utils.LogUtils;
-import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.R;
 import com.qaqzz.free_im.activities.AddFriendActivity;
 import com.qaqzz.free_im.activities.ChatActivity;
-import com.qaqzz.free_im.database.ChatRecord;
-import com.qaqzz.free_im.database.ChatRecordDao;
-import com.qaqzz.free_im.database.DaoManager;
-import com.qaqzz.free_im.database.Message;
-import com.qaqzz.free_im.database.MessageDao;
-import com.qaqzz.free_im.database.MessageDaoUtils;
-import com.qaqzz.free_im.im.MessageStruct;
-import com.qaqzz.free_im.im.SocketService;
+import com.qaqzz.free_im.api.AddFriendApi;
+import com.qaqzz.free_im.api.GetChatroomAvatarNameByChatroomIdApi;
+import com.qaqzz.free_im.http.api.ApiListener;
+import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.free_im.model.ChatRecordModel;
+import com.qaqzz.socket.database.ChatRecord;
+import com.qaqzz.socket.database.ChatRecordDao;
+import com.qaqzz.socket.database.Dao;
+import com.qaqzz.socket.database.Message;
+import com.qaqzz.socket.database.MessageDao;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * FileName: ChatRecordFragment
@@ -103,7 +102,7 @@ public class ChatRecordFragment extends BaseFragment  implements SwipeRefreshLay
                     @Override
                     public void onClick(View v) {       // 点击跳转
                         switch (model.getType()) {
-                            case "common":
+                            case "ordinary":
                                 ChatActivity.startChatRecordActivity(getActivity(),
                                         model.getChatroomId(),model.getName(),model.getAvatar());
                                 break;
@@ -119,8 +118,6 @@ public class ChatRecordFragment extends BaseFragment  implements SwipeRefreshLay
         });
         mChatRecordView.setAdapter(mChatRecordAdapter);
 
-        //避免重复
-        queryChatRecord(true);
     }
 
     /**
@@ -128,70 +125,46 @@ public class ChatRecordFragment extends BaseFragment  implements SwipeRefreshLay
      */
     private void queryChatRecord(boolean setRefreshing ) {
         //mChatRecordRefreshLayout.setRefreshing(setRefreshing);
-
-        LogUtils.i("onSuccess");
+        Context mContext = this.getContext();
+        LogUtils.i("查询聊天记录");
 
         if (mList.size() > 0) {
             mList.clear();
         }
 
         // 查询聊天会话数据
-        DaoManager mManager = new DaoManager();
-        mManager.init(this.getContext(), ChatRecordDao.TABLENAME);
-        List<ChatRecord> chatRecordList = mManager.getDaoSession().getChatRecordDao().queryBuilder().list();
+        ChatRecordDao chatRecordDao = Dao.getInstances(this.getContext()).getDaoSession().getChatRecordDao();
+        List<ChatRecord> chatRecordList = chatRecordDao.queryBuilder().list();
+        LogUtils.i(String.valueOf(chatRecordList.size()));
         if (chatRecordList.size() > 0) {
             for (int i = 0; i < chatRecordList.size(); i++) {
                 final ChatRecord c = chatRecordList.get(i);
-                ChatRecordModel chatRecordModel = new ChatRecordModel();
-                chatRecordModel.setChatroomId(c.getChatroom_id());
-                chatRecordModel.setAvatar(c.getAvatar());
-                chatRecordModel.setName(c.getName());
-                chatRecordModel.setType(c.getChat_type());
-                //未读消息数量
-                DaoManager mManagers = new DaoManager();
-                mManagers.init(this.getContext(), MessageDao.TABLENAME);
-                Long UnReadSize = mManagers.getDaoSession().getMessageDao().queryBuilder()
-                        .where(MessageDao.Properties.Chatroom_id.eq(c.getChatroom_id()))
-                        .where(MessageDao.Properties.Is_read.eq(0))
-                        .count();
-                chatRecordModel.setUnReadSize(UnReadSize.intValue());
+                int index = i;
+                // 判断头像名称是否为空
+                if (c.getAvatar()== null || c.getAvatar().equals("") || c.getName() == null || c.getName().equals("")) {
+                    //获取头像|名称
+                    try{
+                        GetChatroomAvatarNameByChatroomIdApi apiBase = new GetChatroomAvatarNameByChatroomIdApi(c.getChatroom_id());
+                        apiBase.post(new ApiListener() {
+                            @Override
+                            public void success(ApiUtil api, JSONObject response) {
+                                c.setName(apiBase.mInfo.getName());
+                                c.setAvatar(apiBase.mInfo.getAvatar());
+                                // 更新数据库
+                                com.qaqzz.socket.database.model.ChatRecordModel.getInstance(mContext).record(c);
+                                // 重新加载
+                                queryChatRecord(false);
+                            }
+                            @Override
+                            public void error(ApiUtil api, JSONObject response) {
 
-                // 查询聊天消息
-
-                List<Message> messageList = mManagers.getDaoSession().getMessageDao().queryBuilder()
-                        .where(MessageDao.Properties.Chatroom_id.eq(c.getChatroom_id()))
-                        .orderDesc(MessageDao.Properties._id)
-                        .limit(1).list();
-                if (messageList.size() > 0) {
-                    Message message = messageList.get(0);
-                    String getMessage_send_time = message.getMessage_send_time() + "000";
-                    Date date = new Date( Long.parseLong( getMessage_send_time ) );
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    chatRecordModel.setEndMsgTime(format.format(date));
-
-                    // 判断消息类型
-                    switch (message.getMessage_code()) {
-                        case 1:
-                            chatRecordModel.setEndMsg(message.getContent());
-                            break;
-                        case 2:
-                            chatRecordModel.setEndMsg(getString(R.string.text_chat_record_img));
-                            break;
-                        case 3:
-                            chatRecordModel.setEndMsg(getString(R.string.text_chat_record_location));
-                            break;
+                            }
+                        });
+                    }catch (Exception ex) {
+                        ex.printStackTrace();
                     }
                 }
-                mList.add(chatRecordModel);
-                mChatRecordAdapter.notifyDataSetChanged();
-
-                if(mList.size() > 0){
-                    item_empty_view.setVisibility(View.GONE);
-                    mChatRecordView.setVisibility(View.VISIBLE);
-                }else{
-                    item_empty_view.setVisibility(View.VISIBLE);
-                    mChatRecordView.setVisibility(View.GONE);
-                }
+                forList(c);
             }
             mChatRecordRefreshLayout.setRefreshing(false);
         } else {    // 如果数据为空
@@ -200,6 +173,60 @@ public class ChatRecordFragment extends BaseFragment  implements SwipeRefreshLay
             mChatRecordView.setVisibility(View.GONE);
         }
     }
+
+    private void forList(ChatRecord c) {
+        MessageDao messageDao = Dao.getInstances(this.getContext()).getDaoSession().getMessageDao();
+        ChatRecordModel chatRecordModel = new ChatRecordModel();
+        chatRecordModel.setChatroomId(c.getChatroom_id());
+        chatRecordModel.setAvatar(c.getAvatar());
+        chatRecordModel.setName(c.getName());
+        chatRecordModel.setType(c.getChat_type());
+        //未读消息数量
+        Long UnReadSize = messageDao.queryBuilder()
+                .where(MessageDao.Properties.Chatroom_id.eq(c.getChatroom_id()))
+                .where(MessageDao.Properties.Is_read.eq(0))
+                .count();
+        chatRecordModel.setUnReadSize(UnReadSize.intValue());
+
+        // 查询聊天消息
+        List<Message> messageList = messageDao.queryBuilder()
+                .where(MessageDao.Properties.Chatroom_id.eq(c.getChatroom_id()))
+                .orderDesc(MessageDao.Properties._id)
+                .limit(1)
+                .list();
+        if (messageList.size() > 0) {
+            Message message = messageList.get(0);
+            String getMessage_send_time = message.getMessage_send_time() + "000";
+            Date date = new Date( Long.parseLong( getMessage_send_time ) );
+            SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm:ss");
+            chatRecordModel.setEndMsgTime(format.format(date));
+
+            // 判断消息类型
+            switch (message.getMessage_code()) {
+                case 1:
+                    chatRecordModel.setEndMsg(message.getContent());
+                    break;
+                case 2:
+                    chatRecordModel.setEndMsg(getString(R.string.text_chat_record_img));
+                    break;
+                case 3:
+                    chatRecordModel.setEndMsg(getString(R.string.text_chat_record_location));
+                    break;
+            }
+        }
+        mList.add(chatRecordModel);
+
+        mChatRecordAdapter.notifyDataSetChanged();
+
+        if(mList.size() > 0){
+            item_empty_view.setVisibility(View.GONE);
+            mChatRecordView.setVisibility(View.VISIBLE);
+        }else{
+            item_empty_view.setVisibility(View.VISIBLE);
+            mChatRecordView.setVisibility(View.GONE);
+        }
+    }
+
 
     @Override
     public void onClick(View view) {

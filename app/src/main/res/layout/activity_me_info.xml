@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:scrollbars="none"
     android:focusable="true"
+    android:background="@color/color_background"
     android:focusableInTouchMode="true">
 
     <LinearLayout
@@ -39,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
-            android:background="@android:color/white"
+            android:background="@color/color_background"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:paddingRight="15dp">
@@ -48,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_upload_nickname"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/color_text" />
 
             <EditText
                 android:id="@+id/et_nickname"
@@ -59,7 +60,7 @@
                 android:background="@android:color/transparent"
                 android:maxLines="8"
                 android:paddingLeft="20dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/color_text"
                 android:textSize="16sp" />
 
             <ImageView
@@ -74,7 +75,7 @@
             android:id="@+id/ll_user_sex"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@android:color/white"
+            android:background="@color/color_background"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:paddingRight="15dp">
@@ -83,7 +84,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_me_info_sex"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/color_text" />
 
             <TextView
                 android:id="@+id/tv_user_sex"
@@ -91,10 +92,10 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:background="@android:color/transparent"
+                android:background="@color/color_background"
                 android:gravity="center_vertical"
                 android:paddingLeft="20dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/color_text"
                 android:textSize="16sp" />
 
             <ImageView
@@ -110,7 +111,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
-            android:background="@android:color/white"
+            android:background="@color/color_background"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:paddingRight="15dp">
@@ -119,7 +120,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_me_info_birthday"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/color_text" />
 
             <TextView
                 android:id="@+id/tv_user_birthday"
@@ -127,10 +128,10 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:background="@android:color/transparent"
+                android:background="@color/color_background"
                 android:gravity="center_vertical"
                 android:paddingLeft="20dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/color_text"
                 android:textSize="16sp" />
 
             <ImageView
@@ -145,7 +146,7 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginTop="10dp"
-            android:background="@android:color/white"
+            android:background="@color/color_background"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:paddingRight="15dp">
@@ -154,7 +155,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_me_info_desc"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/color_text" />
 
             <EditText
                 android:id="@+id/et_user_desc"
@@ -166,7 +167,7 @@
                 android:maxLength="24"
                 android:maxLines="3"
                 android:paddingLeft="20dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/color_text"
                 android:textSize="16sp" />
 
             <ImageView

@@ -11,13 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import com.qaqzz.framework.base.BaseActivity;
 import com.qaqzz.framework.base.BaseUIActivity;
-import com.qaqzz.framework.event.EventManager;
-import com.qaqzz.free_im.http.api.ApiListener;
-import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.framework.entity.Constants;
+import com.qaqzz.framework.event.EventManager;
 import com.qaqzz.framework.manager.DialogManager;
 import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.framework.view.DialogView;
@@ -26,6 +22,8 @@ import com.qaqzz.framework.view.TouchPictureV;
 import com.qaqzz.free_im.MainActivity;
 import com.qaqzz.free_im.R;
 import com.qaqzz.free_im.api.LoginApi;
+import com.qaqzz.free_im.http.api.ApiListener;
+import com.qaqzz.free_im.http.api.ApiUtil;
 
 import org.json.JSONObject;
 
@@ -156,11 +154,12 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
                     SpUtils.getInstance().putString(Constants.SP_TOKEN, apiBase.mInfo.getAccess_token());
                     SpUtils.getInstance().putString(Constants.SP_USERID, apiBase.mInfo.getUid());
                     mLodingView.hide();
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    // 刷新个人信息
+                    // 刷新个人信息事件
                     EventManager.post(EventManager.EVENT_REFRE_ME_INFO);
+                    // 用户登录事件
+                    EventManager.post(EventManager.ENTER_FROM_LOGIN_PAGE);
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
-//                    super.success(api, response);
                 }
                 @Override
                 public void error(ApiUtil api, JSONObject response) {

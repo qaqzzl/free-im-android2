@@ -8,5 +8,6 @@
     <string name="text_chat_friend_msg_channl">friend message</string>
 
     <string name="text_server_status">Server not connected</string>
-
+    <string name="updataversion">升级到新版本</string>
+    <string name="updatasuer">立即升级</string>
 </resources>

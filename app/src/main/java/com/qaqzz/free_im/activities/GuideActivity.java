@@ -5,14 +5,12 @@ import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.viewpager.widget.ViewPager;
 
-import com.qaqzz.framework.base.BaseActivity;
 import com.qaqzz.framework.base.BasePageAdapter;
 import com.qaqzz.framework.base.BaseUIActivity;
 import com.qaqzz.framework.manager.MediaPlayerManager;
@@ -67,7 +65,6 @@ public class GuideActivity extends BaseUIActivity implements View.OnClickListene
 
     @Override
     protected void initWidget() {
-        super.initWidget();
         iv_music_switch = (ImageView) findViewById(R.id.iv_music_switch);
         tv_guide_skip = (TextView) findViewById(R.id.tv_guide_skip);
         iv_guide_point_1 = (ImageView) findViewById(R.id.iv_guide_point_1);

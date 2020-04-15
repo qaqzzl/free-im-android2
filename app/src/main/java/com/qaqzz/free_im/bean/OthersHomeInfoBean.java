@@ -1,5 +1,7 @@
 package com.qaqzz.free_im.bean;
 
+import com.qaqzz.framework.utils.BirthdayToAgeConstellationShengXiaoUtil;
+
 /**
  * @author qaqzz
  * @description TODO
@@ -30,10 +32,10 @@ public class OthersHomeInfoBean {
 
 
     public boolean isSex() {
-        if (getGender().toString().equals("m")) {
-            return false;
-        } else {
+        if (getGender().equals("m")) {
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -43,6 +45,14 @@ public class OthersHomeInfoBean {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getAge() {
+        return BirthdayToAgeConstellationShengXiaoUtil.BirthdayToAge(birthdate);
+    }
+
+    public String getConstellation() {
+        return BirthdayToAgeConstellationShengXiaoUtil.TimeToConstellation(birthdate);
     }
 
     public String getBirthdate() {

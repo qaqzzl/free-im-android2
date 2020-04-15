@@ -34,10 +34,10 @@ public class FriendListBean {
         private String signature;
 
         public boolean isSex() {
-            if (getGender().toString().equals("m")) {
-                return false;
-            } else {
+            if (getGender().equals("m")) {
                 return true;
+            } else {
+                return false;
             }
         }
 

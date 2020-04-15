@@ -10,20 +10,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.qaqzz.free_im.http.api.ApiListener;
-import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.framework.adapter.CommonAdapter;
 import com.qaqzz.framework.adapter.CommonViewHolder;
 import com.qaqzz.framework.base.BaseFragment;
-import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.event.EventManager;
 import com.qaqzz.framework.event.MessageEvent;
 import com.qaqzz.framework.utils.CommonUtils;
-import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.R;
 import com.qaqzz.free_im.activities.UserInfoActivity;
 import com.qaqzz.free_im.api.FriendListApi;
 import com.qaqzz.free_im.bean.FriendListBean;
+import com.qaqzz.free_im.http.api.ApiListener;
+import com.qaqzz.free_im.http.api.ApiUtil;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;

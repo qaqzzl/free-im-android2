@@ -50,7 +50,7 @@ public class NewFriendActivity extends BaseBackActivity {
         super.onCreate(savedInstanceState);
     }
 
-    public void initWidget() {
+    protected void initWidget() {
 
         mNewFriendView = (RecyclerView) findViewById(R.id.mNewFriendView);
 

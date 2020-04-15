@@ -17,20 +17,27 @@ public class ChatRecord {
     @NotNull
     private String chatroom_id;  // 聊天室ID
 
-    private int last_open_time;     // 上次打开聊天室时间
+    private Long last_open_time;     // 上次打开聊天室时间
     @NotNull
     private String chat_type;       // 聊天室类型, group:群组, common:普通(单聊)
     private String avatar;          // 聊天室头像
     private String name;            // 聊天室名称
-    @Generated(hash = 436498312)
-    public ChatRecord(Long _id, @NotNull String chatroom_id, int last_open_time,
-            @NotNull String chat_type, String avatar, String name) {
+    private int is_top;             // 是否置顶 1:是, 0:否
+    private Long deleted_at;      // 删除时间
+    private Long created_at;      // 创建时间
+    @Generated(hash = 2078874143)
+    public ChatRecord(Long _id, @NotNull String chatroom_id, Long last_open_time,
+            @NotNull String chat_type, String avatar, String name, int is_top,
+            Long deleted_at, Long created_at) {
         this._id = _id;
         this.chatroom_id = chatroom_id;
         this.last_open_time = last_open_time;
         this.chat_type = chat_type;
         this.avatar = avatar;
         this.name = name;
+        this.is_top = is_top;
+        this.deleted_at = deleted_at;
+        this.created_at = created_at;
     }
     @Generated(hash = 1442974643)
     public ChatRecord() {
@@ -47,10 +54,10 @@ public class ChatRecord {
     public void setChatroom_id(String chatroom_id) {
         this.chatroom_id = chatroom_id;
     }
-    public int getLast_open_time() {
+    public Long getLast_open_time() {
         return this.last_open_time;
     }
-    public void setLast_open_time(int last_open_time) {
+    public void setLast_open_time(Long last_open_time) {
         this.last_open_time = last_open_time;
     }
     public String getChat_type() {
@@ -70,5 +77,23 @@ public class ChatRecord {
     }
     public void setName(String name) {
         this.name = name;
+    }
+    public int getIs_top() {
+        return this.is_top;
+    }
+    public void setIs_top(int is_top) {
+        this.is_top = is_top;
+    }
+    public Long getDeleted_at() {
+        return this.deleted_at;
+    }
+    public void setDeleted_at(Long deleted_at) {
+        this.deleted_at = deleted_at;
+    }
+    public Long getCreated_at() {
+        return this.created_at;
+    }
+    public void setCreated_at(Long created_at) {
+        this.created_at = created_at;
     }
 }

@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.qaqzz.framework.entity.Constants;
-import com.qaqzz.framework.utils.LogUtils;
 import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.MainActivity;
 import com.qaqzz.free_im.R;

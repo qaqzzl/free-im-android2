@@ -23,9 +23,9 @@ public class Message {
 
     private String server_message_id;       // 服务端消息ID
     @NotNull
-    private String content;      // 内容
+    private String content;             // 内容
     @NotNull
-    private int message_code;      // 消息类型 code
+    private int message_code;           // 消息类型 code
     @NotNull
     private int message_send_time;      // 发送时间
     @NotNull

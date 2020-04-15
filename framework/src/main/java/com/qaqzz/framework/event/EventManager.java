@@ -18,6 +18,10 @@ public class EventManager {
     public static final int FLAG_SEND_IMAGE = 2;
     //发送位置数据
     public static final int FLAG_SEND_LOCATION = 3;
+    //视频消息
+    public static final int FLAG_SEND_VIDEO = 4;
+    //文件消息
+    public static final int FLAG_SEND_FILE = 5;
 
     //相机数据
     public static final int FLAG_SEND_CAMERA_VIEW = 1004;
@@ -29,11 +33,18 @@ public class EventManager {
     //更新Token状态
     public static final int EVENT_REFRE_TOKEN_STATUS = 1007;
 
-    //融云服务器连接状态
-    public static final int EVENT_SERVER_CONNECT_STATUS = 1008;
+    //SOCKET服务器启动
+    public static final int EVENT_SERVER_SOCKET_START = 1008;
+    //SOCKET服务器重启
+    public static final int EVENT_SERVER_SOCKET_RESTART = 1009;
+    //SOCKET服务器停止
+    public static final int EVENT_SERVER_SOCKET_STOP = 10010;
 
     //退出登录页
-    public static final int EVENT_EXIT_LOGIN_UI = 1009;
+    public static final int EVENT_EXIT_LOGIN_UI = 10011;
+
+    //从登录页进入
+    public static final int ENTER_FROM_LOGIN_PAGE = 10012;
 
 
     /**

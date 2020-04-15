@@ -5,7 +5,6 @@ import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.CardContants;
 import com.qaqzz.free_im.bean.DynamicListBean;
-import com.qaqzz.free_im.bean.FriendApplyListBean;
 import com.qaqzz.free_im.http.api.ApiUtil;
 
 import org.json.JSONArray;
@@ -21,12 +20,12 @@ import java.util.List;
  */
 public class DynamicListApi extends ApiUtil {
     public DynamicListBean mInfo = new DynamicListBean();
-    public DynamicListApi(String page, String perpage){
+    public DynamicListApi(String current_page, String perpage){
         String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
         String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
         addParam("uid",uid);
         addParam("access_token",token);
-        addParam("page",page);
+        addParam("current_page",current_page);
         addParam("perpage",perpage);
     }
 
@@ -50,6 +49,7 @@ public class DynamicListApi extends ApiUtil {
                     model.setGender(Object.getString("gender"));
                     model.setMember_id(Object.getString("member_id"));
                     model.setNickname(Object.getString("nickname"));
+                    model.setBirthdate(Object.getString("birthdate"));
                     model.setContent(Object.getString("content"));
                     model.setCreated_at(Object.getString("created_at"));
                     model.setDynamic_id(Object.getString("dynamic_id"));
@@ -87,6 +87,7 @@ public class DynamicListApi extends ApiUtil {
                     model.setGender(Object.getString("gender"));
                     model.setMember_id(Object.getString("member_id"));
                     model.setNickname(Object.getString("nickname"));
+                    model.setBirthdate(Object.getString("birthdate"));
                     model.setContent(Object.getString("content"));
                     model.setCreated_at(Object.getString("created_at"));
                     model.setDynamic_id(Object.getString("dynamic_id"));

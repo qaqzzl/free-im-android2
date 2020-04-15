@@ -1,21 +1,21 @@
 package com.qaqzz.free_im.http.api;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.qaqzz.free_im.http.response.OkHttpCallback;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
+
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class OkHttpUtil {
 
@@ -106,7 +106,7 @@ public class OkHttpUtil {
     }
 
 
-    public static void post(String url, OkHttpCallback okHttpCallback,HashMap<String,String> bodyMap) {
+    public static void post(String url, OkHttpCallback okHttpCallback,HashMap bodyMap) {
         Call call = null;
         try {
             MediaType mediaType = MediaType.parse("application/json; charset=utf-8");

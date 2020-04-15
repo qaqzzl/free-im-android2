@@ -1,5 +1,7 @@
 package com.qaqzz.free_im.bean;
 
+import com.qaqzz.framework.utils.BirthdayToAgeConstellationShengXiaoUtil;
+
 import java.util.List;
 
 /**
@@ -25,6 +27,7 @@ public class SearchFriendBean {
          * member_id : 10
          * nickname : 会员 - 009252
          * signature :
+         * birthdate : 0
          */
 
         private String avatar;
@@ -32,6 +35,19 @@ public class SearchFriendBean {
         private String member_id;
         private String nickname;
         private String signature;
+        private String birthdate;
+
+        public String getAge() {
+            return BirthdayToAgeConstellationShengXiaoUtil.BirthdayToAge(birthdate);
+        }
+
+        public String getBirthdate() {
+            return birthdate;
+        }
+
+        public void setBirthdate(String birthdate) {
+            this.birthdate = birthdate;
+        }
 
         public String getAvatar() {
             return avatar;

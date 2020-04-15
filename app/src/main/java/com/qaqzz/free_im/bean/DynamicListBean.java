@@ -1,5 +1,9 @@
 package com.qaqzz.free_im.bean;
 
+import com.qaqzz.framework.utils.BirthdayToAgeConstellationShengXiaoUtil;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -97,6 +101,10 @@ public class DynamicListBean {
 
         public String getBirthdate() {
             return birthdate;
+        }
+
+        public String getAge() {
+            return BirthdayToAgeConstellationShengXiaoUtil.BirthdayToAge(birthdate);
         }
 
         public void setBirthdate(String birthdate) {

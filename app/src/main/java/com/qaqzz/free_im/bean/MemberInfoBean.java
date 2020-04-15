@@ -1,5 +1,7 @@
 package com.qaqzz.free_im.bean;
 
+import com.qaqzz.framework.utils.BirthdayToAgeConstellationShengXiaoUtil;
+
 /**
  * @author qaqzz
  * @description TODO
@@ -32,6 +34,10 @@ public class MemberInfoBean {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getAge() {
+        return BirthdayToAgeConstellationShengXiaoUtil.BirthdayToAge(birthdate);
     }
 
     public String getBirthdate() {

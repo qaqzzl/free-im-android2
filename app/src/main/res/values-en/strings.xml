@@ -3,9 +3,11 @@
     <string name="app_name">Free</string>
 
     <string name="app_index_text">It\'s always nice to meet</string>
-
-    <string name="text_main_star">star</string>
-    <string name="text_main_square">square</string>
+    <string name="app_not_yet_developed">Features not yet developed</string>
+    <string name="cache_clear_success">Cache cleared successfully</string>
+    <string name="app_friend_qrcode">扫一扫二维码，加我好友</string>
+    <string name="text_main_friend">friend</string>
+    <string name="text_main_dynamic">dynamic</string>
     <string name="text_main_chat">chat</string>
     <string name="text_main_me">me</string>
 
@@ -22,6 +24,7 @@
     <string name="text_login_agreement_1">I have read and agree</string>
     <string name="text_login_agreement_2"><u>User agreement</u></string>
     <string name="text_login_phone_null">The phone number cannot be empty</string>
+    <string name="text_login_nickname_null">Username can not be empty</string>
     <string name="text_login_pw_null">The password cannot be empty</string>
     <string name="text_login_code_null">The captcha cannot be empty</string>
     <string name="text_login_now_login_text">Landing..</string>
@@ -135,6 +138,7 @@
     <string name="text_setting_version">version number</string>
     <string name="text_setting_zh">中文</string>
     <string name="text_setting_en">English</string>
+    <string name="text_setting_description">Changing languages will restart the app</string>
     <string name="text_setting_logout">Log out</string>
     <string name="text_share_download">Download to album</string>
 

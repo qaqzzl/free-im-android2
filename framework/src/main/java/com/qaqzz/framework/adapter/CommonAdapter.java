@@ -13,6 +13,15 @@ import java.util.List;
  * Profile: 万能的适配器
  */
 public class CommonAdapter<T> extends RecyclerView.Adapter<CommonViewHolder> {
+    // 分页
+    private int normalType = 0;     // 第一种ViewType，正常的item
+    private int footType = 1;       // 第二种ViewType，底部的提示View
+    private static boolean hasMore = true;   // 变量，是否有更多数据
+    private boolean fadeTips = false; // 变量，是否隐藏了底部的提示
+    public boolean isFadeTips() {
+        return fadeTips;
+    }
+
 
     private List<T> mList;
 
@@ -67,4 +76,7 @@ public class CommonAdapter<T> extends RecyclerView.Adapter<CommonViewHolder> {
     public int getItemCount() {
         return mList == null ? 0 : mList.size();
     }
+
+
+
 }

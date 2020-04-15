@@ -9,6 +9,7 @@ import com.qaqzz.free_im.http.response.OkHttpCallback;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
+
 import okhttp3.Call;
 
 
@@ -91,7 +92,7 @@ public abstract class ApiUtil {
         }
     }
 
-    private HashMap<String,String> mBodyMap = new HashMap<>();
+    private HashMap mBodyMap = new HashMap<>();
 
     public void post(ApiListener listener) {
         mApiListener = listener;
@@ -114,10 +115,8 @@ public abstract class ApiUtil {
     /**
      * 添加参数
      *
-     * @param key
-     * @param value
      */
-    public void addParam(String key, String value) {
+    public <V> void addParam(String key, V value) {
         mBodyMap.put(key, value);
     }
 

@@ -1,22 +1,34 @@
 package com.qaqzz.free_im;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.qaqzz.framework.base.BaseUIActivity;
 import com.qaqzz.framework.entity.Constants;
+import com.qaqzz.framework.event.EventManager;
+import com.qaqzz.framework.event.MessageEvent;
+import com.qaqzz.framework.helper.UpdateHelper;
 import com.qaqzz.framework.utils.LogUtils;
+import com.qaqzz.framework.utils.PackageUtils;
 import com.qaqzz.framework.utils.SpUtils;
+import com.qaqzz.framework.view.UpdataDialog;
 import com.qaqzz.free_im.activities.LoginActivity;
+import com.qaqzz.free_im.api.AppNewVersionGetApi;
 import com.qaqzz.free_im.api.MemberInfoApi;
 import com.qaqzz.free_im.fragment.ChatRecordFragment;
 import com.qaqzz.free_im.fragment.DynamicFragment;
@@ -24,9 +36,9 @@ import com.qaqzz.free_im.fragment.FriendFragment;
 import com.qaqzz.free_im.fragment.MeFragment;
 import com.qaqzz.free_im.http.api.ApiListener;
 import com.qaqzz.free_im.http.api.ApiUtil;
-import com.qaqzz.free_im.im.SocketService;
 import com.qaqzz.socket.socket.SocketManager;
-
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import cn.jzvd.Jzvd;
@@ -62,6 +74,7 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
     private FragmentTransaction mMeTransaction = null;
 
 //    private Disposable disposable;
+
     /**
      * 1.初始化Frahment
      * 2.显示Fragment
@@ -79,7 +92,6 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
 //        super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
 //    }
-
     @Override
     protected int getContentLayoutId() {
         return R.layout.activity_main;
@@ -89,6 +101,7 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
     @Override
     protected void initWidget() {
         super.initWidget();
+        mUpdateHelper = new UpdateHelper(this);
 
         iv_friend = (ImageView) findViewById(R.id.iv_friend);
         tv_friend = (TextView) findViewById(R.id.tv_friend);
@@ -114,7 +127,7 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
         //设置文本
         tv_chat.setText(getString(R.string.text_main_chat));
         tv_friend.setText(getString(R.string.text_main_friend));
-        tv_square.setText(getString(R.string.text_main_square));
+        tv_square.setText(getString(R.string.text_main_dynamic));
         tv_me.setText(getString(R.string.text_main_me));
 
         initFragment();
@@ -122,11 +135,14 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
         //切换默认的选项卡
         checkMainTab(0);
 
-        //检查TOKEN
+        // 检查更新
+        updateApp();
+
+        // 检查TOKEN
         checkToken();
 
-        // 启动socket
-        SocketManager.getInstance(this).startTcpConnection();
+        // 初始化
+        AppUtil.getInstance(this).appLoginInit();
     }
 
 
@@ -288,6 +304,7 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
                 tv_friend.setTextColor(getResources().getColor(R.color.color_text));
                 tv_square.setTextColor(getResources().getColor(R.color.color_text));
                 tv_chat.setTextColor(getResources().getColor(R.color.color_text));
+
                 break;
         }
     }
@@ -300,10 +317,9 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
         //获取TOKEN , USERID
         String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
         String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-//        Toast.makeText(this, "token:" + token + ", uid:" + uid, Toast.LENGTH_SHORT).show();
         if (!TextUtils.isEmpty(token) && !TextUtils.isEmpty(uid)) {
             // 请求用户基本信息
-            try{
+            try {
                 MemberInfoApi apiBase = new MemberInfoApi();
                 apiBase.post(new ApiListener() {
                     @Override
@@ -312,20 +328,64 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
                         SpUtils.getInstance().putString(Constants.SP_USER_NAME, apiBase.mInfo.getNickname());
                         SpUtils.getInstance().putString(Constants.SP_USER_AVATAR, apiBase.mInfo.getAvatar());
                     }
+
                     @Override
                     public void error(ApiUtil api, JSONObject response) {
 
                     }
                 });
 
-            }catch (Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
 
         } else {
-            Toast.makeText(this,"请登录",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "请登录", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         }
     }
+    private UpdateHelper mUpdateHelper;
+    // 检查应用更新
+    private void updateApp() {
+        Context mContext = this;
+        try {
+            AppNewVersionGetApi apiBase = new AppNewVersionGetApi();
+            apiBase.post(new ApiListener() {
+                @Override
+                public void success(ApiUtil api, JSONObject response) {
+                    int version_code = PackageUtils.getVersionCode(mContext);
+                    if (version_code < apiBase.mInfo.getVersion_code()) {
+                        mUpdateHelper.updateApp(apiBase.mInfo.getVersion_name(),
+                                apiBase.mInfo.getVersion_download(),
+                                apiBase.mInfo.getVersion_description());
+                    }
+                }
+                @Override
+                public void error(ApiUtil api, JSONObject response) {
 
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+        switch (event.getType()) {
+            case EventManager.EVENT_REFRE_ME_INFO:
+                Log.i("EVENT_REFRE_ME_INFO", "刷新个人信息");
+                checkToken();
+                break;
+            case EventManager.EVENT_SERVER_SOCKET_START:
+                Log.i("EVENT_REFRE_ME_INFO", "SOCKET服务启动");
+                SocketManager.getInstance(this).startTcpConnection();
+                break;
+            case EventManager.ENTER_FROM_LOGIN_PAGE:
+                Log.i("ENTER_FROM_LOGIN_PAGE", "登录事件");
+                AppUtil.getInstance(this).appLoginInit();
+                break;
+        }
+    }
 }

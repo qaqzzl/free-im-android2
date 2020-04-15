@@ -3,9 +3,13 @@
     <string name="app_name">Free自由</string>
 
     <string name="app_index_text">相遇总是美好的</string>
+    <string name="app_friend_qrcode">扫一扫二维码，加我好友</string>
+
+    <string name="app_not_yet_developed">功能暂未开发</string>
+    <string name="cache_clear_success">缓存清除成功</string>
 
     <string name="text_main_friend">好友</string>
-    <string name="text_main_square">动态</string>
+    <string name="text_main_dynamic">动态</string>
     <string name="text_main_chat">消息</string>
     <string name="text_main_me">我的</string>
 
@@ -136,6 +140,7 @@
     <string name="text_setting_version">版本号</string>
     <string name="text_setting_zh">中文</string>
     <string name="text_setting_en">English</string>
+    <string name="text_setting_description">更换语言将重启App</string>
     <string name="text_setting_logout">退出登录</string>
     <string name="text_share_download">下载到相册</string>
 

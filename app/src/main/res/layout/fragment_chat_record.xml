@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_star_bg"
     android:orientation="vertical">
 
+    <!--    <TextView-->
+<!--        android:id="@+id/tv_connect_status"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="30dp"-->
+<!--        android:background="@color/color_star_bg"-->
+<!--        android:gravity="center"-->
+<!--        android:paddingLeft="10dp"-->
+<!--        android:textSize="10sp"-->
+<!--        android:text="正在连接服务器...."-->
+<!--        android:textColor="@android:color/white" />-->
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="0dp"
         android:paddingLeft="15dp"
         android:paddingRight="15dp">
 
@@ -30,12 +41,12 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-<!--            <ImageView-->
-<!--                android:id="@+id/iv_camera"-->
-<!--                android:layout_width="25dp"-->
-<!--                android:layout_height="25dp"-->
-<!--                android:layout_marginRight="15dp"-->
-<!--                android:src="@drawable/img_camera" />-->
+            <!--            <ImageView-->
+            <!--                android:id="@+id/iv_camera"-->
+            <!--                android:layout_width="25dp"-->
+            <!--                android:layout_height="25dp"-->
+            <!--                android:layout_marginRight="15dp"-->
+            <!--                android:src="@drawable/img_camera" />-->
 
             <ImageView
                 android:id="@+id/iv_add"
@@ -46,17 +57,6 @@
         </LinearLayout>
 
     </RelativeLayout>
-
-<!--    <TextView-->
-<!--        android:id="@+id/tv_connect_status"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="30dp"-->
-<!--        android:background="@color/color_star_bg"-->
-<!--        android:gravity="center"-->
-<!--        android:paddingLeft="10dp"-->
-<!--        android:textSize="10sp"-->
-<!--        android:text="正在连接服务器...."-->
-<!--        android:textColor="@android:color/white" />-->
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/mChatRecordRefreshLayout"

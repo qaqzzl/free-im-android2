@@ -1,13 +1,10 @@
 package com.qaqzz.free_im.activities;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -20,8 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.loader.content.CursorLoader;
 
 import com.qaqzz.framework.base.BaseBackActivity;
 import com.qaqzz.framework.helper.FileHelper;

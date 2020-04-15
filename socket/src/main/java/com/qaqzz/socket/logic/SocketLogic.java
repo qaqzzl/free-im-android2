@@ -6,10 +6,12 @@ import android.util.Log;
 import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.event.MessageEvent;
 import com.qaqzz.framework.utils.SpUtils;
-import com.qaqzz.socket.database.DaoManager;
+import com.qaqzz.socket.database.ChatRecord;
+import com.qaqzz.socket.database.ChatRecordDao;
+import com.qaqzz.socket.database.Dao;
 import com.qaqzz.socket.database.Message;
 import com.qaqzz.socket.database.MessageDao;
-import com.qaqzz.socket.database.MessageDaoUtils;
+import com.qaqzz.socket.database.model.ChatRecordModel;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -66,12 +68,18 @@ public class SocketLogic {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        MessageDao messageDao = Dao.getInstances(mContext).getDaoSession().getMessageDao();
         switch (action) {
-            case "04":      // 消息
+            case "08":      // 消息
                 Log.d("SOCKET", "接收到消息: " + message);
-                // 写入数据库
-                MessageDaoUtils mMessageDaoUtils = new MessageDaoUtils(mContext);
-                mMessageDaoUtils.insertMessage(new Message(null, chatroom_id, user_id, client_message_id, server_message_id, content, message_code, message_send_time, "success",0) );
+                // 写入消息数据库
+                messageDao.insert(new Message(null, chatroom_id, user_id, client_message_id, server_message_id, content, message_code, message_send_time, "success",0) );
+                // 记录聊天会话
+                Long timestamp = System.currentTimeMillis();//获取系统的当前时间戳
+                String[] chatroom_ids = chatroom_id.split(":");
+                ChatRecordModel.getInstance(mContext).record(new ChatRecord(
+                        null, chatroom_id, timestamp, chatroom_ids[1], null, null,0,null,timestamp
+                ));
 
                 // 消息事件
                 MessageEvent mMessageEvent = new MessageEvent(message_code);
@@ -79,18 +87,16 @@ public class SocketLogic {
                 mMessageEvent.setUserId(user_id);
                 EventBus.getDefault().post(mMessageEvent);
                 break;
-            case "05":      //
+            case "05":      //消息回执
                 Log.d("SOCKET", "消息回执");
-                // 更新数据库
-                DaoManager mManager = DaoManager.getInstance();
-                mManager.init(mContext, MessageDao.TABLENAME);
-                Message mMessage = mManager.getDaoSession().getMessageDao().queryBuilder().where(MessageDao.Properties.Client_message_id.eq(client_message_id)).build().unique();
+                // 更新消息数据库
+                Message mMessage = messageDao.queryBuilder().where(MessageDao.Properties.Client_message_id.eq(client_message_id)).build().unique();
                 if (mMessage != null) {
                     Long ts = new Date().getTime() / 1000;
                     mMessage.setMessage_send_time(ts.intValue());
                     mMessage.setServer_message_id(server_message_id);
                     mMessage.setMessage_status("success");
-                    mManager.getDaoSession().getMessageDao().update(mMessage);
+                    messageDao.update(mMessage);
                 }
                 break;
         }

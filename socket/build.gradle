@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
 
+apply plugin: 'org.greenrobot.greendao' // 应用插件
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -16,7 +18,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            //自定义Gradle常量
+            buildConfigField("String","HTTP_SERVER","\"http://192.168.0.108:8066\"")
+            buildConfigField("String","SOCKET_SERVER","\"192.168.0.108\"")
+            buildConfigField("String","SOCKET_SERVER_PORT","\"1208\"")
+        }
         release {
+            buildConfigField("String","HTTP_SERVER","\"https://free-im.qaqzz.com:8066\"")
+            buildConfigField("String","SOCKET_SERVER","\"101.132.107.212\"")
+            buildConfigField("String","SOCKET_SERVER_PORT","\"1208\"")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -37,4 +48,12 @@ dependencies {
     implementation "org.greenrobot:eventbus:3.1.1"
     // add library
     implementation 'org.greenrobot:greendao:3.2.2'
+}
+greendao {
+    // 指定数据库schema版本号，迁移等操作会用到
+    schemaVersion 1
+    // 设置生成数据库文件的目录，默认是在build中，可以将生成的文件放到我们的java目录中
+    targetGenDir 'src/main/java'
+    // 设置生成的数据库相关文件的包名，默认为entity所在的包名
+    //daoPackage 'com.shufeng.greendao.gen'
 }

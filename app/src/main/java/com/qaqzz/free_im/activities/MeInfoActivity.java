@@ -17,12 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import cn.aigestudio.datepicker.views.DatePicker;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.qaqzz.framework.adapter.CommonAdapter;
 import com.qaqzz.framework.base.BaseBackActivity;
@@ -30,17 +26,13 @@ import com.qaqzz.framework.event.EventManager;
 import com.qaqzz.framework.helper.FileHelper;
 import com.qaqzz.framework.helper.GlideHelper;
 import com.qaqzz.framework.manager.DialogManager;
-import com.qaqzz.framework.utils.CommonUtils;
 import com.qaqzz.framework.utils.LogUtils;
-import cn.aigestudio.datepicker.cons.DPMode;
 import com.qaqzz.framework.view.DialogView;
 import com.qaqzz.framework.view.LodingView;
 import com.qaqzz.free_im.R;
 import com.qaqzz.free_im.api.MemberInfoApi;
 import com.qaqzz.free_im.api.QiniuUploadTokenApi;
-import com.qaqzz.free_im.api.SearchFriendApi;
 import com.qaqzz.free_im.api.UpdateMemberInfoApi;
-import com.qaqzz.free_im.bean.SearchFriendBean;
 import com.qaqzz.free_im.http.api.ApiListener;
 import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qiniu.android.http.ResponseInfo;
@@ -56,6 +48,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import cn.aigestudio.datepicker.cons.DPMode;
+import cn.aigestudio.datepicker.views.DatePicker;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -74,14 +68,6 @@ public class MeInfoActivity extends BaseBackActivity implements View.OnClickList
     private EditText et_user_desc;
     private TextView tv_user_birthday;
     private LinearLayout ll_user_birthday;
-    private TextView tv_user_age;
-    private LinearLayout ll_user_age;
-    private TextView tv_user_constellation;
-    private LinearLayout ll_user_constellation;
-    private TextView tv_user_hobby;
-    private LinearLayout ll_user_hobby;
-    private TextView tv_user_status;
-    private LinearLayout ll_user_status;
     private RelativeLayout ll_photo;
 
     //头像选择框
@@ -96,37 +82,10 @@ public class MeInfoActivity extends BaseBackActivity implements View.OnClickList
     private TextView tv_girl;
     private TextView tv_sex_cancel;
 
-    //年龄选择框
-    private DialogView mAgeDialog;
-    private RecyclerView mAgeView;
-    private TextView tv_age_cancel;
-    private CommonAdapter<Integer> mAgeAdapter;
-    private List<Integer> mAgeList = new ArrayList<>();
 
     //生日选择框
     private DialogView mBirthdayDialog;
     private DatePicker mDatePicker;
-
-    //星座选择框
-    private DialogView mConstellationDialog;
-    private RecyclerView mConstellationnView;
-    private TextView tv_constellation_cancel;
-    private CommonAdapter<String> mConstellationAdapter;
-    private List<String> mConstellationList = new ArrayList<>();
-
-    //状态选择框
-    private DialogView mStatusDialog;
-    private RecyclerView mStatusView;
-    private TextView tv_status_cancel;
-    private CommonAdapter<String> mStatusAdapter;
-    private List<String> mStatusList = new ArrayList<>();
-
-    //爱好选择框
-    private DialogView mHobbyDialog;
-    private RecyclerView mHobbyView;
-    private TextView tv_hobby_cancel;
-    private CommonAdapter<String> mHobbyAdapter;
-    private List<String> mHobbyList = new ArrayList<>();
 
     //头像文件
     private File uploadPhotoFile;
@@ -143,156 +102,11 @@ public class MeInfoActivity extends BaseBackActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        initView();
-
         initPhotoDialog();
         initSexDialog();
         initBirthdayDialog();
 
-//        initAgeDialog();
-//        initConstellationDialog();
-//        initHobbyDialog();
-//        initStatusDialog();
     }
-
-    /**
-     * 状态选择
-     */
-//    private void initStatusDialog() {
-//
-//        String[] sArray = getResources().getStringArray(R.array.StatusArray);
-//        for (int i = 0; i < sArray.length; i++) {
-//            mStatusList.add(sArray[i]);
-//        }
-//
-//        mStatusDialog = DialogManager.getInstance().initView(this, R.layout.dialog_select_constellation, Gravity.BOTTOM);
-//        mStatusView = mStatusDialog.findViewById(R.id.mConstellationnView);
-//        tv_status_cancel = mStatusDialog.findViewById(R.id.tv_cancel);
-//
-//        mStatusView.setLayoutManager(new LinearLayoutManager(this));
-//        mStatusView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-//
-//        mStatusAdapter = new CommonAdapter<>(mStatusList, new CommonAdapter.OnBindDataListener<String>() {
-//
-//            @Override
-//            public void onBindViewHolder(final String model, CommonViewHolder hodler, int type, int position) {
-//                hodler.setText(R.id.tv_age_text, model);
-//
-//                hodler.itemView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        DialogManager.getInstance().hide(mStatusDialog);
-//                        tv_user_status.setText(model);
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public int getLayoutId(int type) {
-//                return R.layout.layout_me_age_item;
-//            }
-//        });
-//        mStatusView.setAdapter(mStatusAdapter);
-//
-//        tv_status_cancel.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                DialogManager.getInstance().hide(mStatusDialog);
-//            }
-//        });
-//    }
-
-    /**
-     * 爱好选择
-     */
-//    private void initHobbyDialog() {
-//
-//        String[] hArray = getResources().getStringArray(R.array.HobbyArray);
-//        for (int i = 0; i < hArray.length; i++) {
-//            mHobbyList.add(hArray[i]);
-//        }
-//
-//        mHobbyDialog = DialogManager.getInstance().initView(this, R.layout.dialog_select_constellation, Gravity.BOTTOM);
-//        mHobbyView = mHobbyDialog.findViewById(R.id.mConstellationnView);
-//        tv_hobby_cancel = mHobbyDialog.findViewById(R.id.tv_cancel);
-//
-//        mHobbyView.setLayoutManager(new GridLayoutManager(this, 4));
-//        mHobbyView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
-//        mHobbyView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-//        mHobbyAdapter = new CommonAdapter<>(mHobbyList, new CommonAdapter.OnBindDataListener<String>() {
-//            @Override
-//            public void onBindViewHolder(final String model, CommonViewHolder hodler, int type, int position) {
-//                hodler.setText(R.id.tv_age_text, model);
-//
-//                hodler.itemView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        DialogManager.getInstance().hide(mHobbyDialog);
-//                        tv_user_hobby.setText(model);
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public int getLayoutId(int viewType) {
-//                return R.layout.layout_me_age_item;
-//            }
-//        });
-//        mHobbyView.setAdapter(mHobbyAdapter);
-//
-//        tv_hobby_cancel.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                DialogManager.getInstance().hide(mHobbyDialog);
-//            }
-//        });
-//    }
-
-    /**
-     * 星座选择
-     */
-//    private void initConstellationDialog() {
-//
-//        String[] cArray = getResources().getStringArray(R.array.ConstellatioArray);
-//        for (int i = 0; i < cArray.length; i++) {
-//            mConstellationList.add(cArray[i]);
-//        }
-//
-//        mConstellationDialog = DialogManager.getInstance().initView(this, R.layout.dialog_select_constellation, Gravity.BOTTOM);
-//        mConstellationnView = mConstellationDialog.findViewById(R.id.mConstellationnView);
-//        tv_constellation_cancel = mConstellationDialog.findViewById(R.id.tv_cancel);
-//
-//        mConstellationnView.setLayoutManager(new GridLayoutManager(this, 4));
-//        mConstellationnView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
-//        mConstellationnView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-//        mConstellationAdapter = new CommonAdapter<>(mConstellationList, new CommonAdapter.OnBindDataListener<String>() {
-//            @Override
-//            public void onBindViewHolder(final String model, CommonViewHolder hodler, int type, int position) {
-//                hodler.setText(R.id.tv_age_text, model);
-//
-//                hodler.itemView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        DialogManager.getInstance().hide(mConstellationDialog);
-//                        tv_user_constellation.setText(model);
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public int getLayoutId(int viewType) {
-//                return R.layout.layout_me_age_item;
-//            }
-//        });
-//        mConstellationnView.setAdapter(mConstellationAdapter);
-//
-//        tv_constellation_cancel.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                DialogManager.getInstance().hide(mConstellationDialog);
-//            }
-//        });
-//    }
 
     /**
      * 生日选择
@@ -317,50 +131,6 @@ public class MeInfoActivity extends BaseBackActivity implements View.OnClickList
             }
         });
     }
-
-    /**
-     * 年龄选择
-     */
-//    private void initAgeDialog() {
-//
-//        for (int i = 0; i < 100; i++) {
-//            mAgeList.add(i);
-//        }
-//
-//        mAgeDialog = DialogManager.getInstance().initView(this, R.layout.dialog_select_age, Gravity.BOTTOM);
-//        mAgeView = (RecyclerView) mAgeDialog.findViewById(R.id.mAgeView);
-//        tv_age_cancel = (TextView) mAgeDialog.findViewById(R.id.tv_cancel);
-//
-//        mAgeView.setLayoutManager(new LinearLayoutManager(this));
-//        mAgeView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-//        mAgeAdapter = new CommonAdapter<>(mAgeList, new CommonAdapter.OnBindDataListener<Integer>() {
-//            @Override
-//            public void onBindViewHolder(final Integer model, CommonViewHolder hodler, int type, int position) {
-//                hodler.setText(R.id.tv_age_text, model + "");
-//
-//                hodler.itemView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        DialogManager.getInstance().hide(mAgeDialog);
-//                        tv_user_age.setText(model + "");
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public int getLayoutId(int viewType) {
-//                return R.layout.layout_me_age_item;
-//            }
-//        });
-//        mAgeView.setAdapter(mAgeAdapter);
-//
-//        tv_age_cancel.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                DialogManager.getInstance().hide(mAgeDialog);
-//            }
-//        });
-//    }
 
     /**
      * 头像选择
@@ -425,7 +195,7 @@ public class MeInfoActivity extends BaseBackActivity implements View.OnClickList
         });
     }
 
-    private void initView() {
+    protected void initWidget() {
 
         mLodingView = new LodingView(this);
 
@@ -442,29 +212,12 @@ public class MeInfoActivity extends BaseBackActivity implements View.OnClickList
         ll_user_birthday = (LinearLayout) findViewById(R.id.ll_user_birthday);
 
 
-//        tv_user_age = (TextView) findViewById(R.id.tv_user_age);
-//        ll_user_age = (LinearLayout) findViewById(R.id.ll_user_age);
-
-//        tv_user_constellation = (TextView) findViewById(R.id.tv_user_constellation);
-//        ll_user_constellation = (LinearLayout) findViewById(R.id.ll_user_constellation);
-//
-//        tv_user_hobby = (TextView) findViewById(R.id.tv_user_hobby);
-//        ll_user_hobby = (LinearLayout) findViewById(R.id.ll_user_hobby);
-//
-//        tv_user_status = (TextView) findViewById(R.id.tv_user_status);
-//        ll_user_status = (LinearLayout) findViewById(R.id.ll_user_status);
-
         ll_photo = (RelativeLayout) findViewById(R.id.ll_photo);
 
         iv_user_photo.setOnClickListener(this);
         ll_user_sex.setOnClickListener(this);
         ll_user_birthday.setOnClickListener(this);
-
-//        ll_user_constellation.setOnClickListener(this);
-//        ll_user_age.setOnClickListener(this);
-//        ll_user_hobby.setOnClickListener(this);
-//        ll_user_status.setOnClickListener(this);
-//        ll_photo.setOnClickListener(this);
+        ll_photo.setOnClickListener(this);
 
         loadUserInfo();
     }
@@ -482,19 +235,13 @@ public class MeInfoActivity extends BaseBackActivity implements View.OnClickList
                     // 展示个人信息
                     GlideHelper.loadUrl(context, apiBase.mInfo.getAvatar(), iv_user_photo);
                     et_nickname.setText(apiBase.mInfo.getNickname());
-                    tv_user_sex.setText(apiBase.mInfo.getGender() == "w" ? getString(R.string.text_me_info_girl) : getString(R.string.text_me_info_boy));
+                    tv_user_sex.setText(apiBase.mInfo.getGender().equals("w") ? getString(R.string.text_me_info_girl) : getString(R.string.text_me_info_boy));
                     String getBirthdate = apiBase.mInfo.getBirthdate() + "000";
                     Date date = new Date( Long.parseLong( getBirthdate ) );
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                     String Birthdate = format.format(date);
-                    Log.d("Birthdate",Birthdate);
                     tv_user_birthday.setText(Birthdate);
                     et_user_desc.setText(apiBase.mInfo.getSignature());
-
-//                    tv_user_age.setText(apiBase.mInfo.getBirthdate() + "");
-//                    tv_user_constellation.setText(imUser.getConstellation());
-//                    tv_user_hobby.setText(imUser.getHobby());
-//                    tv_user_status.setText(imUser.getStatus());
                 }
                 @Override
                 public void error(ApiUtil api, JSONObject response) {
@@ -555,18 +302,6 @@ public class MeInfoActivity extends BaseBackActivity implements View.OnClickList
                 }catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
-
-//                final BmobFile file = new BmobFile(uploadPhotoFile);
-//                file.uploadblock(new UploadFileListener() {
-//                    @Override
-//                    public void done(BmobException e) {
-//                        if (e == null) {
-//                            imUser.setPhoto(file.getFileUrl());
-//                            updateUser(imUser);
-//                        }
-//                    }
-//                });
             } else {
                 updateUser("");
             }
@@ -590,10 +325,6 @@ public class MeInfoActivity extends BaseBackActivity implements View.OnClickList
         String desc = et_user_desc.getText().toString().trim();
         String sex = tv_user_sex.getText().toString();
         String birthday = tv_user_birthday.getText().toString();
-//        String age = tv_user_age.getText().toString();
-//        String constellation = tv_user_constellation.getText().toString();
-//        String hobby = tv_user_hobby.getText().toString();
-//        String status = tv_user_status.getText().toString();
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             birthday = String.valueOf(sdf.parse(birthday).getTime() / 1000);
@@ -647,18 +378,6 @@ public class MeInfoActivity extends BaseBackActivity implements View.OnClickList
             case R.id.ll_user_birthday:
                 DialogManager.getInstance().show(mBirthdayDialog);
                 break;
-//            case R.id.ll_user_age:
-//                DialogManager.getInstance().show(mAgeDialog);
-//                break;
-//            case R.id.ll_user_constellation:
-//                DialogManager.getInstance().show(mConstellationDialog);
-//                break;
-//            case R.id.ll_user_hobby:
-//                DialogManager.getInstance().show(mHobbyDialog);
-//                break;
-//            case R.id.ll_user_status:
-//                DialogManager.getInstance().show(mStatusDialog);
-//                break;
         }
     }
 

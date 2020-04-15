@@ -5,7 +5,6 @@ import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.CardContants;
 import com.qaqzz.free_im.bean.FriendIdGetChatroomIdBean;
-import com.qaqzz.free_im.bean.MemberInfoBean;
 import com.qaqzz.free_im.http.api.ApiUtil;
 
 import org.json.JSONObject;

@@ -2,10 +2,13 @@ package com.qaqzz.free_im.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -16,22 +19,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.qaqzz.framework.adapter.CommonAdapter;
 import com.qaqzz.framework.adapter.CommonViewHolder;
-import com.qaqzz.framework.base.BaseActivity;
 import com.qaqzz.framework.base.BaseUIActivity;
 import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.helper.GlideHelper;
-import com.qaqzz.framework.utils.SpUtils;
-import com.qaqzz.free_im.api.AddFriendApi;
-import com.qaqzz.free_im.http.api.ApiListener;
-import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.framework.manager.DialogManager;
+import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.framework.view.DialogView;
+import com.qaqzz.framework.view.LoadingDialog;
 import com.qaqzz.free_im.R;
+import com.qaqzz.free_im.api.AddFriendApi;
 import com.qaqzz.free_im.api.OthersHomeInfoApi;
 import com.qaqzz.free_im.bean.OthersHomeInfoBean;
+import com.qaqzz.free_im.http.api.ApiListener;
+import com.qaqzz.free_im.http.api.ApiUtil;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +53,7 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
     private EditText et_msg;
     private TextView tv_cancel;
     private TextView tv_add_friend;
+    private ImageView img_user_info_bg;
 
     /**
      * 1.根据传递过来的ID 查询用户信息 并且显示
@@ -140,8 +146,7 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
         return R.layout.activity_friend_info;
     }
 
-    protected void initData() {
-
+    protected void initWidget() {
         initAddFriendDialog();
 
         //获取用户ID
@@ -151,10 +156,12 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
         iv_user_photo = (CircleImageView) findViewById(R.id.iv_user_photo);
         tv_nickname = (TextView) findViewById(R.id.tv_nickname);
         tv_desc = (TextView) findViewById(R.id.tv_desc);
+        img_user_info_bg = (ImageView) findViewById(R.id.img_user_info_bg);
         mUserInfoView = (RecyclerView) findViewById(R.id.mUserInfoView);
         btn_add_friend = (Button) findViewById(R.id.btn_add_friend);
         btn_chat = (Button) findViewById(R.id.btn_chat);
         ll_is_friend = (LinearLayout) findViewById(R.id.ll_is_friend);
+
 
         ll_back.setOnClickListener(this);
         btn_add_friend.setOnClickListener(this);
@@ -206,6 +213,10 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
         if (TextUtils.isEmpty(userId)) {
             return;
         }
+        LoadingDialog loadingDialog = LoadingDialog.getInstance(this);
+        loadingDialog.show();
+
+        Context mContext = this;
         //查询他人主页用户信息
         try{
             OthersHomeInfoApi apiBase = new OthersHomeInfoApi(userId);
@@ -215,11 +226,12 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
                     mInfo = apiBase.mInfo;
                     updateUserInfo(apiBase.mInfo);
                     //判断好友关系
-                    if (apiBase.mInfo.getIs_friend().toString().equals("yes")) {
+                    if (apiBase.mInfo.getIs_friend().equals("yes")) {
                         //你们是好友关系
                         btn_add_friend.setVisibility(View.GONE);
                         ll_is_friend.setVisibility(View.VISIBLE);
                     }
+                    loadingDialog.dismiss();
                 }
                 @Override
                 public void error(ApiUtil api, JSONObject response) {
@@ -261,6 +273,7 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
         }
     }
 
+
     /**
      * 更新用户信息
      *
@@ -271,11 +284,36 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
                 iv_user_photo);
         tv_nickname.setText(mInfo.getNickname());
         tv_desc.setText(mInfo.getSignature());
+        new Thread(new Runnable(){
+            Drawable drawable = null;
+            @Override
+            public void run() {
+                try {
+                    drawable = Drawable.createFromStream(
+                            new URL(mInfo.getAvatar()).openStream(), "image.jpg");
+                } catch (IOException e) {
+                    Log.d("test", e.getMessage());
+                }
+                if (drawable == null) {
+                    Log.d("test", "null drawable");
+                } else {
+                    Log.d("test", "not null drawable");
+                }
+                // post() 特别关键，就是到UI主线程去更新图片
+                img_user_info_bg.post(new Runnable(){
+                    @Override
+                    public void run() {
+                        // TODO Auto-generated method stub
+                        img_user_info_bg.setBackground(drawable);
+                    }}) ;
+            }
+
+        }).start()  ;
 
         //性别 年龄 生日 星座
         addUserInfoModel(mColor[0], getString(R.string.text_me_info_sex), mInfo.isSex() ? getString(R.string.text_me_info_boy) : getString(R.string.text_me_info_girl));
-        addUserInfoModel(mColor[1], getString(R.string.text_me_info_age), "0" + getString(R.string.text_search_age));
-        addUserInfoModel(mColor[2], getString(R.string.text_me_info_constellation), "未知星座");
+        addUserInfoModel(mColor[1], getString(R.string.text_me_info_age), mInfo.getAge() + getString(R.string.text_search_age));
+        addUserInfoModel(mColor[2], getString(R.string.text_me_info_constellation), mInfo.getConstellation());
         //刷新数据
         mUserInfoAdapter.notifyDataSetChanged();
     }
@@ -331,4 +369,6 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
                 break;
         }
     }
+
+
 }

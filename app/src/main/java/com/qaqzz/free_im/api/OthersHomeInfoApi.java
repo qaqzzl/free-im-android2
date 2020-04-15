@@ -1,12 +1,11 @@
 package com.qaqzz.free_im.api;
 
 
-
 import com.qaqzz.framework.entity.Constants;
-import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.CardContants;
 import com.qaqzz.free_im.bean.OthersHomeInfoBean;
+import com.qaqzz.free_im.http.api.ApiUtil;
 
 import org.json.JSONObject;
 

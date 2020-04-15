@@ -94,11 +94,37 @@ public class TCPSocket {
                         if (bis == null ) {
                             continue;
                         }
-                        byte[] data = new byte[1024];
-                        int size = 0;
-                        //收到客服端发送的消息后，返回一个消息给客户端
-                        while((size = bis.read(data)) != -1) {
-                            String str = new String(data, 0, size);
+                        byte buffer[] = new byte[1024];
+                        int frameSize = 0;
+                        byte[] mRecvBuffer = {0};
+                        int mActualReadSize = 0;
+                        int readSize = 0;
+                        //接受服务端消息
+                        while((readSize = bis.read(buffer)) != -1) {
+                            mActualReadSize = 0;
+                            if( readSize > 4 ){
+                                frameSize = ( (buffer[0] & 0xff) << 24 | (buffer[1] & 0xff) << 16 | (buffer[2] & 0xff) << 8 | (buffer[3] & 0xff) );
+                            }
+
+                            while( readSize >= frameSize + 4 ){
+                                mRecvBuffer = new byte[frameSize + 4];
+                                System.arraycopy(buffer, mActualReadSize, mRecvBuffer, 0, frameSize + 4);
+                                mActualReadSize += frameSize + 4;
+
+                                int surplusLength = readSize - (frameSize + 4);
+                                readSize -=  (frameSize + 4);
+                                if( surplusLength >= 4 ){
+                                    int head = ((buffer[mActualReadSize] & 0xff) << 4) | buffer[mActualReadSize + 1];
+                                    if( head == 0xA66A ){
+                                        frameSize = 0;
+                                        frameSize = ( (buffer[mActualReadSize + 0] & 0xff) << 24 | (buffer[ mActualReadSize + 1] & 0xff) << 16 | (buffer[ mActualReadSize + 2] & 0xff) << 8 | (buffer[ mActualReadSize + 3] & 0xff) );
+                                    }else{
+                                        break;
+                                    }
+                                }
+                            }
+
+                            String str = new String(mRecvBuffer, 4, mActualReadSize-4);
                             // 消息处理
                             handleReceiveTcpMessage(str);
                         }
@@ -129,7 +155,15 @@ public class TCPSocket {
                 try {
                     OutputStream outputStream = mSocket.getOutputStream();
                     if (outputStream != null) {
-                        outputStream.write((msg).getBytes("UTF-8"));
+                        Log.d("SOCKET msg", msg);
+                        int mesLen = msg.getBytes().length;
+                        byte[] array = new byte[4+mesLen];
+                        array[0] = (byte)(mesLen>>24);
+                        array[1] = (byte)(mesLen>>16);
+                        array[2] = (byte)(mesLen>>8);
+                        array[3] = (byte)mesLen;
+                        System.arraycopy(msg.getBytes(), 0, array, 4, mesLen);
+                        outputStream.write(array);
                         outputStream.flush();
                     }
                 } catch (IOException e) {
