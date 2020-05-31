@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -41,12 +42,28 @@ public class TCPSocket {
     private BufferedInputStream bis;
     private PrintWriter pw;
     private HeartbeatTimer timer;
+    private HeartbeatTimer timerACK;
     private long lastReceiveTime = 0;
+
+    private int HeadbeatTime = getSecondTimestampTwo();
+
+    // ack
+    public static int SequenceIdCount = 0;
 
     private OnConnectionStateListener mListener;
 
     private static final long TIME_OUT = 15 * 1000;
     private static final long HEARTBEAT_MESSAGE_DURATION = 2 * 5000;
+
+    /**
+     * 获取精确到秒的时间戳
+     * @return
+     */
+    public static int getSecondTimestampTwo(){
+        Date date = new Date();
+        String timestamp = String.valueOf(date.getTime()/1000);
+        return Integer.valueOf(timestamp);
+    }
 
     public TCPSocket(Context context) {
         this.mContext = context;
@@ -69,6 +86,9 @@ public class TCPSocket {
                     startReceiveTcpThread();
                     // 启动心跳
                     startHeartbeatTimer();
+
+                    // 心跳检测
+                    Heartbeat();
                 } else {
                     if (mListener != null) {
                         mListener.onFailed(Config.ErrorCode.CREATE_TCP_ERROR);
@@ -94,39 +114,43 @@ public class TCPSocket {
                         if (bis == null ) {
                             continue;
                         }
-                        byte buffer[] = new byte[1024];
+                        byte buffer[] = new byte[2048];
                         int frameSize = 0;
                         byte[] mRecvBuffer = {0};
                         int mActualReadSize = 0;
                         int readSize = 0;
+                        int headInt = 13;
+                        int action = 0;
                         //接受服务端消息
                         while((readSize = bis.read(buffer)) != -1) {
                             mActualReadSize = 0;
-                            if( readSize > 4 ){
-                                frameSize = ( (buffer[0] & 0xff) << 24 | (buffer[1] & 0xff) << 16 | (buffer[2] & 0xff) << 8 | (buffer[3] & 0xff) );
+                            if( readSize >= headInt ){
+                                frameSize = ( (buffer[9] & 0xff) << 24 | (buffer[10] & 0xff) << 16 | (buffer[11] & 0xff) << 8 | (buffer[12] & 0xff) );
+                                action = (buffer[4] & 0xff);
                             }
+                            while( readSize >= frameSize + headInt ) {
+                                mRecvBuffer = new byte[frameSize + headInt];
+                                System.arraycopy(buffer, mActualReadSize, mRecvBuffer, 0, frameSize + headInt);
+                                mActualReadSize += frameSize + headInt;
 
-                            while( readSize >= frameSize + 4 ){
-                                mRecvBuffer = new byte[frameSize + 4];
-                                System.arraycopy(buffer, mActualReadSize, mRecvBuffer, 0, frameSize + 4);
-                                mActualReadSize += frameSize + 4;
-
-                                int surplusLength = readSize - (frameSize + 4);
-                                readSize -=  (frameSize + 4);
-                                if( surplusLength >= 4 ){
-                                    int head = ((buffer[mActualReadSize] & 0xff) << 4) | buffer[mActualReadSize + 1];
-                                    if( head == 0xA66A ){
+                                int surplusLength = readSize - (frameSize + headInt);
+                                readSize -=  (frameSize + headInt);
+                                if( surplusLength >= headInt ){
+                                    int head = ((buffer[mActualReadSize] & 0xff) << headInt) | buffer[mActualReadSize + 1];
+//                                    if( head == 0xA66A ){
+                                    if( head == 13 ){
                                         frameSize = 0;
-                                        frameSize = ( (buffer[mActualReadSize + 0] & 0xff) << 24 | (buffer[ mActualReadSize + 1] & 0xff) << 16 | (buffer[ mActualReadSize + 2] & 0xff) << 8 | (buffer[ mActualReadSize + 3] & 0xff) );
+                                        frameSize = ( (buffer[mActualReadSize + 9] & 0xff) << 24 | (buffer[ mActualReadSize + 10] & 0xff) << 16 | (buffer[ mActualReadSize + 11] & 0xff) << 8 | (buffer[ mActualReadSize + 12] & 0xff) );
+                                        action = (buffer[mActualReadSize + 4] & 0xff);
                                     }else{
                                         break;
                                     }
                                 }
                             }
 
-                            String str = new String(mRecvBuffer, 4, mActualReadSize-4);
+                            String str = new String(mRecvBuffer, headInt, mActualReadSize-headInt);
                             // 消息处理
-                            handleReceiveTcpMessage(str);
+                            handleReceiveTcpMessage(action, str);
                         }
                     }
 
@@ -142,27 +166,49 @@ public class TCPSocket {
      *
      * @param line
      */
-    private void handleReceiveTcpMessage(String line) {
-        Log.d(TAG, "接收 tcp 消息：" + line);
-        SocketLogic.getInstance(mContext).MessageHandle(line);
+    private void handleReceiveTcpMessage(int action, String line) {
+        Log.d(TAG, "接收 tcp 消息：" + action + "  " + line);
+        HeadbeatTime = getSecondTimestampTwo();
+        if (action == 100) {
+            return;
+        }
+        SocketLogic.getInstance(mContext).MessageHandle(action ,line);
         lastReceiveTime = System.currentTimeMillis();
     }
 
-    public void sendTcpMessage(final String msg) {
+    public void sendTcpMessage(final int action, final byte[] msg, final int sequenceId) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     OutputStream outputStream = mSocket.getOutputStream();
                     if (outputStream != null) {
-                        Log.d("SOCKET msg", msg);
-                        int mesLen = msg.getBytes().length;
-                        byte[] array = new byte[4+mesLen];
-                        array[0] = (byte)(mesLen>>24);
-                        array[1] = (byte)(mesLen>>16);
-                        array[2] = (byte)(mesLen>>8);
-                        array[3] = (byte)mesLen;
-                        System.arraycopy(msg.getBytes(), 0, array, 4, mesLen);
+                        Log.d("SOCKET msg", msg.toString());
+                        int mesLen = msg.length;
+                        byte[] array = new byte[13+mesLen];
+
+                        // 版本
+                        int version = 100000;
+                        array[0] = (byte)(version>>24);
+                        array[1] = (byte)(version>>16);
+                        array[2] = (byte)(version>>8);
+                        array[3] = (byte)version;
+
+                        // 方法
+                        array[4] = (byte)action;
+
+                        // 请求ID
+                        array[5] = (byte)(sequenceId>>24);
+                        array[6] = (byte)(sequenceId>>16);
+                        array[7] = (byte)(sequenceId>>8);
+                        array[8] = (byte)sequenceId;
+
+                        // 内容大小
+                        array[9] = (byte)(mesLen>>24);
+                        array[10] = (byte)(mesLen>>16);
+                        array[11] = (byte)(mesLen>>8);
+                        array[12] = (byte)mesLen;
+                        System.arraycopy(msg, 0, array, 13, mesLen);
                         outputStream.write(array);
                         outputStream.flush();
                     }
@@ -192,7 +238,8 @@ public class TCPSocket {
             @Override
             public void onSchedule() {
                 // 发送心跳消息
-                sendTcpMessage(Config.PING);
+                byte[] msg = new byte[0];
+                sendTcpMessage(Config.PING, msg, 0);
             }
 
         });
@@ -204,6 +251,30 @@ public class TCPSocket {
             timer.exit();
             timer = null;
         }
+        if (timerACK != null) {
+            timerACK.exit();
+            timerACK = null;
+        }
+    }
+
+    // 心跳检测
+    private void Heartbeat() {
+        if (timerACK == null) {
+            timerACK = new HeartbeatTimer();
+        }
+        timerACK.setOnScheduleListener(new HeartbeatTimer.OnScheduleListener() {
+            @Override
+            public void onSchedule() {
+                if ((HeadbeatTime + 7) <  getSecondTimestampTwo() ) {
+                    /*发送失败说明socket断开了或者出现了其他错误*/
+                    Log.d("SOCKET", "心跳超时，正在重连");
+                    /*重连*/
+                    mListener.onFailed(Config.ErrorCode.CREATE_TCP_ERROR);
+                }
+            }
+
+        });
+        timerACK.startTimer(0, 1000 * 5);
     }
 
     /**

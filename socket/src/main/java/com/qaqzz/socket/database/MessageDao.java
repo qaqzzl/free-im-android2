@@ -25,13 +25,12 @@ public class MessageDao extends AbstractDao<Message, Long> {
         public final static Property _id = new Property(0, Long.class, "_id", true, "_id");
         public final static Property Chatroom_id = new Property(1, String.class, "chatroom_id", false, "CHATROOM_ID");
         public final static Property User_id = new Property(2, String.class, "user_id", false, "USER_ID");
-        public final static Property Client_message_id = new Property(3, String.class, "client_message_id", false, "CLIENT_MESSAGE_ID");
-        public final static Property Server_message_id = new Property(4, String.class, "server_message_id", false, "SERVER_MESSAGE_ID");
-        public final static Property Content = new Property(5, String.class, "content", false, "CONTENT");
-        public final static Property Message_code = new Property(6, int.class, "message_code", false, "MESSAGE_CODE");
-        public final static Property Message_send_time = new Property(7, int.class, "message_send_time", false, "MESSAGE_SEND_TIME");
-        public final static Property Message_status = new Property(8, String.class, "message_status", false, "MESSAGE_STATUS");
-        public final static Property Is_read = new Property(9, int.class, "is_read", false, "IS_READ");
+        public final static Property Message_id = new Property(3, String.class, "message_id", false, "MESSAGE_ID");
+        public final static Property Content = new Property(4, String.class, "content", false, "CONTENT");
+        public final static Property Message_code = new Property(5, int.class, "message_code", false, "MESSAGE_CODE");
+        public final static Property Message_send_time = new Property(6, int.class, "message_send_time", false, "MESSAGE_SEND_TIME");
+        public final static Property Message_status = new Property(7, String.class, "message_status", false, "MESSAGE_STATUS");
+        public final static Property Is_read = new Property(8, int.class, "is_read", false, "IS_READ");
     }
 
 
@@ -50,13 +49,12 @@ public class MessageDao extends AbstractDao<Message, Long> {
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: _id
                 "\"CHATROOM_ID\" TEXT NOT NULL ," + // 1: chatroom_id
                 "\"USER_ID\" TEXT NOT NULL ," + // 2: user_id
-                "\"CLIENT_MESSAGE_ID\" TEXT NOT NULL ," + // 3: client_message_id
-                "\"SERVER_MESSAGE_ID\" TEXT," + // 4: server_message_id
-                "\"CONTENT\" TEXT NOT NULL ," + // 5: content
-                "\"MESSAGE_CODE\" INTEGER NOT NULL ," + // 6: message_code
-                "\"MESSAGE_SEND_TIME\" INTEGER NOT NULL ," + // 7: message_send_time
-                "\"MESSAGE_STATUS\" TEXT NOT NULL ," + // 8: message_status
-                "\"IS_READ\" INTEGER NOT NULL );"); // 9: is_read
+                "\"MESSAGE_ID\" TEXT NOT NULL ," + // 3: message_id
+                "\"CONTENT\" TEXT NOT NULL ," + // 4: content
+                "\"MESSAGE_CODE\" INTEGER NOT NULL ," + // 5: message_code
+                "\"MESSAGE_SEND_TIME\" INTEGER NOT NULL ," + // 6: message_send_time
+                "\"MESSAGE_STATUS\" TEXT NOT NULL ," + // 7: message_status
+                "\"IS_READ\" INTEGER NOT NULL );"); // 8: is_read
     }
 
     /** Drops the underlying database table. */
@@ -75,17 +73,12 @@ public class MessageDao extends AbstractDao<Message, Long> {
         }
         stmt.bindString(2, entity.getChatroom_id());
         stmt.bindString(3, entity.getUser_id());
-        stmt.bindString(4, entity.getClient_message_id());
- 
-        String server_message_id = entity.getServer_message_id();
-        if (server_message_id != null) {
-            stmt.bindString(5, server_message_id);
-        }
-        stmt.bindString(6, entity.getContent());
-        stmt.bindLong(7, entity.getMessage_code());
-        stmt.bindLong(8, entity.getMessage_send_time());
-        stmt.bindString(9, entity.getMessage_status());
-        stmt.bindLong(10, entity.getIs_read());
+        stmt.bindString(4, entity.getMessage_id());
+        stmt.bindString(5, entity.getContent());
+        stmt.bindLong(6, entity.getMessage_code());
+        stmt.bindLong(7, entity.getMessage_send_time());
+        stmt.bindString(8, entity.getMessage_status());
+        stmt.bindLong(9, entity.getIs_read());
     }
 
     @Override
@@ -98,17 +91,12 @@ public class MessageDao extends AbstractDao<Message, Long> {
         }
         stmt.bindString(2, entity.getChatroom_id());
         stmt.bindString(3, entity.getUser_id());
-        stmt.bindString(4, entity.getClient_message_id());
- 
-        String server_message_id = entity.getServer_message_id();
-        if (server_message_id != null) {
-            stmt.bindString(5, server_message_id);
-        }
-        stmt.bindString(6, entity.getContent());
-        stmt.bindLong(7, entity.getMessage_code());
-        stmt.bindLong(8, entity.getMessage_send_time());
-        stmt.bindString(9, entity.getMessage_status());
-        stmt.bindLong(10, entity.getIs_read());
+        stmt.bindString(4, entity.getMessage_id());
+        stmt.bindString(5, entity.getContent());
+        stmt.bindLong(6, entity.getMessage_code());
+        stmt.bindLong(7, entity.getMessage_send_time());
+        stmt.bindString(8, entity.getMessage_status());
+        stmt.bindLong(9, entity.getIs_read());
     }
 
     @Override
@@ -122,13 +110,12 @@ public class MessageDao extends AbstractDao<Message, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // _id
             cursor.getString(offset + 1), // chatroom_id
             cursor.getString(offset + 2), // user_id
-            cursor.getString(offset + 3), // client_message_id
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // server_message_id
-            cursor.getString(offset + 5), // content
-            cursor.getInt(offset + 6), // message_code
-            cursor.getInt(offset + 7), // message_send_time
-            cursor.getString(offset + 8), // message_status
-            cursor.getInt(offset + 9) // is_read
+            cursor.getString(offset + 3), // message_id
+            cursor.getString(offset + 4), // content
+            cursor.getInt(offset + 5), // message_code
+            cursor.getInt(offset + 6), // message_send_time
+            cursor.getString(offset + 7), // message_status
+            cursor.getInt(offset + 8) // is_read
         );
         return entity;
     }
@@ -138,13 +125,12 @@ public class MessageDao extends AbstractDao<Message, Long> {
         entity.set_id(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setChatroom_id(cursor.getString(offset + 1));
         entity.setUser_id(cursor.getString(offset + 2));
-        entity.setClient_message_id(cursor.getString(offset + 3));
-        entity.setServer_message_id(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setContent(cursor.getString(offset + 5));
-        entity.setMessage_code(cursor.getInt(offset + 6));
-        entity.setMessage_send_time(cursor.getInt(offset + 7));
-        entity.setMessage_status(cursor.getString(offset + 8));
-        entity.setIs_read(cursor.getInt(offset + 9));
+        entity.setMessage_id(cursor.getString(offset + 3));
+        entity.setContent(cursor.getString(offset + 4));
+        entity.setMessage_code(cursor.getInt(offset + 5));
+        entity.setMessage_send_time(cursor.getInt(offset + 6));
+        entity.setMessage_status(cursor.getString(offset + 7));
+        entity.setIs_read(cursor.getInt(offset + 8));
      }
     
     @Override

@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,9 +26,12 @@ import com.qaqzz.framework.event.MessageEvent;
 import com.qaqzz.framework.helper.FileHelper;
 import com.qaqzz.framework.utils.LogUtils;
 import com.qaqzz.framework.utils.SpUtils;
+import com.qaqzz.free_im.MainActivity;
 import com.qaqzz.free_im.R;
 import com.qaqzz.free_im.api.FriendIdGetChatroomIdApi;
 
+import com.qaqzz.free_im.api.GetChatroomIdApi;
+import com.qaqzz.free_im.api.LoginApi;
 import com.qaqzz.free_im.http.api.ApiListener;
 import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.socket.bean.MessageBean;
@@ -490,7 +494,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
         // 记录聊天会话
         Long timestamp = System.currentTimeMillis();//获取系统的当前时间戳
         ChatRecordModel.getInstance(this).record(new ChatRecord(
-                null, chatroom_id, timestamp, "ordinary", yourUserPhoto, yourUserName,0,null,timestamp
+                null, chatroom_id, timestamp, 0, yourUserPhoto, yourUserName,0,null,timestamp
         ));
     }
 
@@ -594,6 +598,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
+        Context mContext = this;
         switch (v.getId()) {
             case R.id.btn_send_msg:     // 发送消息
                 String inputText = et_input_msg.getText().toString().trim();
@@ -604,17 +609,29 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 messageStruct.setChatroom_id(chatroom_id);
                 messageStruct.setCode(1);
                 messageStruct.setContent(inputText);
-                messageStruct.setMessage_id(UUID.randomUUID().toString());
-                Gson gson = new Gson();
-                String jsonStr = gson.toJson(messageStruct);
-                // 发送消息
-                SocketManager.getInstance(this).sendTcpMessage("04"+jsonStr);
-                // 写入数据库
-                String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-                MessageDao messageDao = Dao.getInstances(this).getDaoSession().getMessageDao();
-                messageDao.insert(new Message(null, chatroom_id, uid, messageStruct.getMessage_id(), "", messageStruct.getContent(), 1, 0, "wait",1) );
+                // 使用http请求获取消息ID , 临时使用
+                try{
+                    GetChatroomIdApi apiBase = new GetChatroomIdApi(chatroom_id);
+                    apiBase.post(new ApiListener() {
+                        @Override
+                        public void success(ApiUtil api, JSONObject response) {
+                            messageStruct.setMessage_id(apiBase.mInfo.getMessage_id());
+                            Gson gson = new Gson();
+                            String jsonStr = gson.toJson(messageStruct);
+                            // 发送消息
+                            SocketManager.getInstance(mContext).sendTcpMessage(4,jsonStr.getBytes());
+                            // 写入数据库
+                            String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
+                            MessageDao messageDao = Dao.getInstances(mContext).getDaoSession().getMessageDao();
+                            messageDao.insert(new Message(null, chatroom_id, uid, messageStruct.getMessage_id(), messageStruct.getContent(), 1, 0, "wait",1) );
+                            addText(1, inputText);
+                        }
+                    });
+                }catch (Exception ex) {
+                    ex.printStackTrace();
+                }
 
-                addText(1, inputText);
+
                 //清空消息文本框
                 et_input_msg.setText("");
                 break;

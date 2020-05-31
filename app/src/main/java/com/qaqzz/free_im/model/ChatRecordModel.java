@@ -9,7 +9,7 @@ public class ChatRecordModel {
     public ChatRecordModel() {
     }
 
-    public ChatRecordModel(String chatroomId, String avatar, String name, String endMsg, String endMsgTime, int unReadSize, String type) {
+    public ChatRecordModel(String chatroomId, String avatar, String name, String endMsg, String endMsgTime, int unReadSize, int type) {
         this.chatroomId = chatroomId;
         this.avatar = avatar;
         this.name = name;
@@ -25,13 +25,13 @@ public class ChatRecordModel {
     private String endMsg;          // 最后一条消息
     private String endMsgTime;      // 最后一条消息时间
     private int unReadSize;         // 未读数量
-    private String Type;            // 聊天室类型
+    private int Type;            // 聊天室类型
 
 
-    public String getType() {
+    public int getType() {
         return Type;
     }
-    public void setType(String type) {
+    public void setType(int type) {
         Type = type;
     }
     public String getChatroomId() {

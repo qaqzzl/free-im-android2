@@ -12,6 +12,7 @@ import com.qaqzz.socket.database.Dao;
 import com.qaqzz.socket.database.Message;
 import com.qaqzz.socket.database.MessageDao;
 import com.qaqzz.socket.database.model.ChatRecordModel;
+import com.qaqzz.socket.socket.SocketManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -44,23 +45,20 @@ public class SocketLogic {
     }
 
     // 消息接受处理
-    public void MessageHandle(String message)
+    public void MessageHandle(int action, String message)
     {
-        String action = message.substring(0,2);
-        String message_data = message.substring(2);
         String chatroom_id = "";
-        String client_message_id = "";
-        String server_message_id = "";
+        String message_id = "";
         String content = "";
         int message_send_time = 0;
         int message_code = 0;
         String user_id = "";
         String me_uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
+        JSONObject message_json;
         try {
-            JSONObject message_json = new JSONObject(message_data);
+            message_json = new JSONObject(message);
             chatroom_id = message_json.optString("chatroom_id");
-            client_message_id = message_json.optString("client_message_id");
-            server_message_id = message_json.optString("server_message_id");
+            message_id = message_json.optString("message_id");
             content = message_json.optString("content");
             message_send_time = message_json.optInt("message_send_time");
             message_code = message_json.optInt("code");
@@ -70,15 +68,21 @@ public class SocketLogic {
         }
         MessageDao messageDao = Dao.getInstances(mContext).getDaoSession().getMessageDao();
         switch (action) {
-            case "08":      // 消息
-                Log.d("SOCKET", "接收到消息: " + message);
+            case 5:      // 消息
+                // 判断消息是否存在
+                Message mMessage = messageDao.queryBuilder().where(MessageDao.Properties.Message_id.eq(message_id)).build().unique();
+                if (mMessage != null) {
+                    // 消息回执
+                    SocketManager.getInstance(mContext).sendTcpMessage(7,message.getBytes());
+                    return;
+                }
+
                 // 写入消息数据库
-                messageDao.insert(new Message(null, chatroom_id, user_id, client_message_id, server_message_id, content, message_code, message_send_time, "success",0) );
+                messageDao.insert(new Message(null, chatroom_id, user_id, message_id, content, message_code, message_send_time, "success",0) );
                 // 记录聊天会话
                 Long timestamp = System.currentTimeMillis();//获取系统的当前时间戳
-                String[] chatroom_ids = chatroom_id.split(":");
                 ChatRecordModel.getInstance(mContext).record(new ChatRecord(
-                        null, chatroom_id, timestamp, chatroom_ids[1], null, null,0,null,timestamp
+                        null, chatroom_id, timestamp, 0, null, null,0,null,timestamp
                 ));
 
                 // 消息事件
@@ -86,18 +90,24 @@ public class SocketLogic {
                 mMessageEvent.setContent(content);
                 mMessageEvent.setUserId(user_id);
                 EventBus.getDefault().post(mMessageEvent);
-                break;
-            case "05":      //消息回执
+
+                // 消息回执
                 Log.d("SOCKET", "消息回执");
+                SocketManager.getInstance(mContext).sendTcpMessage(7,message.getBytes());
+                break;
+            case 6:      //服务端消息回执
+                Log.d("SOCKET", "服务端消息回执");
                 // 更新消息数据库
-                Message mMessage = messageDao.queryBuilder().where(MessageDao.Properties.Client_message_id.eq(client_message_id)).build().unique();
+                mMessage = messageDao.queryBuilder().where(MessageDao.Properties.Message_id.eq(message_id)).build().unique();
                 if (mMessage != null) {
                     Long ts = new Date().getTime() / 1000;
                     mMessage.setMessage_send_time(ts.intValue());
-                    mMessage.setServer_message_id(server_message_id);
                     mMessage.setMessage_status("success");
                     messageDao.update(mMessage);
                 }
+                break;
+            case 7:     // 客户端消息回执
+
                 break;
         }
     }

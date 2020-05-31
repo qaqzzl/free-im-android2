@@ -16,12 +16,12 @@ public class Message {
     private Long _id;
     @NotNull
     private String chatroom_id;  // 聊天室ID
+//    @NotNull
+//    private String chatroom_type;  // 聊天室类型
     @NotNull
     private String user_id;      // 发送方用户ID
     @NotNull
-    private String client_message_id;       // 客户端消息ID
-
-    private String server_message_id;       // 服务端消息ID
+    private String message_id;       // 消息ID
     @NotNull
     private String content;             // 内容
     @NotNull
@@ -32,16 +32,14 @@ public class Message {
     private String message_status;      // 消息状态
     @NotNull
     private int is_read;      // 是否已读 , 0:否, 1:是
-    @Generated(hash = 1784875691)
+    @Generated(hash = 1632181978)
     public Message(Long _id, @NotNull String chatroom_id, @NotNull String user_id,
-            @NotNull String client_message_id, String server_message_id,
-            @NotNull String content, int message_code, int message_send_time,
-            @NotNull String message_status, int is_read) {
+            @NotNull String message_id, @NotNull String content, int message_code,
+            int message_send_time, @NotNull String message_status, int is_read) {
         this._id = _id;
         this.chatroom_id = chatroom_id;
         this.user_id = user_id;
-        this.client_message_id = client_message_id;
-        this.server_message_id = server_message_id;
+        this.message_id = message_id;
         this.content = content;
         this.message_code = message_code;
         this.message_send_time = message_send_time;
@@ -69,17 +67,11 @@ public class Message {
     public void setUser_id(String user_id) {
         this.user_id = user_id;
     }
-    public String getClient_message_id() {
-        return this.client_message_id;
+    public String getMessage_id() {
+        return this.message_id;
     }
-    public void setClient_message_id(String client_message_id) {
-        this.client_message_id = client_message_id;
-    }
-    public String getServer_message_id() {
-        return this.server_message_id;
-    }
-    public void setServer_message_id(String server_message_id) {
-        this.server_message_id = server_message_id;
+    public void setMessage_id(String message_id) {
+        this.message_id = message_id;
     }
     public String getContent() {
         return this.content;

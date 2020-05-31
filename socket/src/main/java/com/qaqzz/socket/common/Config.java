@@ -10,7 +10,7 @@ public class Config {
 
     public static final String MSG = "msg";
     public static final String HEARTBREAK = "heartbreak";
-    public static final String PING = "99";         // 心跳
+    public static final int PING = 99;         // 心跳
 
     public static final String TCP_IP = BuildConfig.SOCKET_SERVER;
     public static final String TCP_PORT = BuildConfig.SOCKET_SERVER_PORT;

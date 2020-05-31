@@ -102,7 +102,7 @@ public class ChatRecordFragment extends BaseFragment  implements SwipeRefreshLay
                     @Override
                     public void onClick(View v) {       // 点击跳转
                         switch (model.getType()) {
-                            case "ordinary":
+                            case 0:
                                 ChatActivity.startChatRecordActivity(getActivity(),
                                         model.getChatroomId(),model.getName(),model.getAvatar());
                                 break;

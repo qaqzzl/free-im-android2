@@ -19,16 +19,16 @@ public class ChatRecord {
 
     private Long last_open_time;     // 上次打开聊天室时间
     @NotNull
-    private String chat_type;       // 聊天室类型, group:群组, common:普通(单聊)
+    private int chat_type;       // 聊天室类型, 0:普通(单聊), 1:群组(群聊)
     private String avatar;          // 聊天室头像
     private String name;            // 聊天室名称
     private int is_top;             // 是否置顶 1:是, 0:否
     private Long deleted_at;      // 删除时间
     private Long created_at;      // 创建时间
-    @Generated(hash = 2078874143)
+    @Generated(hash = 1701893954)
     public ChatRecord(Long _id, @NotNull String chatroom_id, Long last_open_time,
-            @NotNull String chat_type, String avatar, String name, int is_top,
-            Long deleted_at, Long created_at) {
+            int chat_type, String avatar, String name, int is_top, Long deleted_at,
+            Long created_at) {
         this._id = _id;
         this.chatroom_id = chatroom_id;
         this.last_open_time = last_open_time;
@@ -60,10 +60,10 @@ public class ChatRecord {
     public void setLast_open_time(Long last_open_time) {
         this.last_open_time = last_open_time;
     }
-    public String getChat_type() {
+    public int getChat_type() {
         return this.chat_type;
     }
-    public void setChat_type(String chat_type) {
+    public void setChat_type(int chat_type) {
         this.chat_type = chat_type;
     }
     public String getAvatar() {

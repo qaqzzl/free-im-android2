@@ -25,7 +25,7 @@ public class ChatRecordDao extends AbstractDao<ChatRecord, Long> {
         public final static Property _id = new Property(0, Long.class, "_id", true, "_id");
         public final static Property Chatroom_id = new Property(1, String.class, "chatroom_id", false, "CHATROOM_ID");
         public final static Property Last_open_time = new Property(2, Long.class, "last_open_time", false, "LAST_OPEN_TIME");
-        public final static Property Chat_type = new Property(3, String.class, "chat_type", false, "CHAT_TYPE");
+        public final static Property Chat_type = new Property(3, int.class, "chat_type", false, "CHAT_TYPE");
         public final static Property Avatar = new Property(4, String.class, "avatar", false, "AVATAR");
         public final static Property Name = new Property(5, String.class, "name", false, "NAME");
         public final static Property Is_top = new Property(6, int.class, "is_top", false, "IS_TOP");
@@ -49,7 +49,7 @@ public class ChatRecordDao extends AbstractDao<ChatRecord, Long> {
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: _id
                 "\"CHATROOM_ID\" TEXT NOT NULL ," + // 1: chatroom_id
                 "\"LAST_OPEN_TIME\" INTEGER," + // 2: last_open_time
-                "\"CHAT_TYPE\" TEXT NOT NULL ," + // 3: chat_type
+                "\"CHAT_TYPE\" INTEGER NOT NULL ," + // 3: chat_type
                 "\"AVATAR\" TEXT," + // 4: avatar
                 "\"NAME\" TEXT," + // 5: name
                 "\"IS_TOP\" INTEGER NOT NULL ," + // 6: is_top
@@ -77,7 +77,7 @@ public class ChatRecordDao extends AbstractDao<ChatRecord, Long> {
         if (last_open_time != null) {
             stmt.bindLong(3, last_open_time);
         }
-        stmt.bindString(4, entity.getChat_type());
+        stmt.bindLong(4, entity.getChat_type());
  
         String avatar = entity.getAvatar();
         if (avatar != null) {
@@ -115,7 +115,7 @@ public class ChatRecordDao extends AbstractDao<ChatRecord, Long> {
         if (last_open_time != null) {
             stmt.bindLong(3, last_open_time);
         }
-        stmt.bindString(4, entity.getChat_type());
+        stmt.bindLong(4, entity.getChat_type());
  
         String avatar = entity.getAvatar();
         if (avatar != null) {
@@ -150,7 +150,7 @@ public class ChatRecordDao extends AbstractDao<ChatRecord, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // _id
             cursor.getString(offset + 1), // chatroom_id
             cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // last_open_time
-            cursor.getString(offset + 3), // chat_type
+            cursor.getInt(offset + 3), // chat_type
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // avatar
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // name
             cursor.getInt(offset + 6), // is_top
@@ -165,7 +165,7 @@ public class ChatRecordDao extends AbstractDao<ChatRecord, Long> {
         entity.set_id(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setChatroom_id(cursor.getString(offset + 1));
         entity.setLast_open_time(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
-        entity.setChat_type(cursor.getString(offset + 3));
+        entity.setChat_type(cursor.getInt(offset + 3));
         entity.setAvatar(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setIs_top(cursor.getInt(offset + 6));

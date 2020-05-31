@@ -1,7 +1,3 @@
- 第一次进入app
- 权限
- 登录后
-    加载全部好友
-        保存聊天室ID跟好友头像昵称的关系
-    加载全部群聊
-        保存聊天室ID跟群聊头像昵称的关系
+## app下载地址: https://cdn.qaqzz.com/app-release.apk
+
+## server源码: https://github.com/qaqzzl/free-im

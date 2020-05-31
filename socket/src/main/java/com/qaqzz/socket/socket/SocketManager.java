@@ -104,7 +104,7 @@ public class SocketManager {
                     Gson gson = new Gson();
                     String jsonStr = gson.toJson(AuthMessage);
                     System.out.println(jsonStr);
-                    tcpSocket.sendTcpMessage("10"+jsonStr);
+                    tcpSocket.sendTcpMessage(10, jsonStr.getBytes(),0);
 
                     Log.d("SOCKET", "socket已连接");
                 }
@@ -126,9 +126,14 @@ public class SocketManager {
         }
     }
     // 发送tcp消息
-    public void sendTcpMessage(String str) {
+    public void sendTcpMessage(final int action, final byte[] msg) {
         if (tcpSocket != null ) {
-            tcpSocket.sendTcpMessage(str);
+            int sequenceId = 0;
+            if (action == 4) {
+//                tcpSocket.SequenceIdCount = tcpSocket.SequenceIdCount+1;
+                sequenceId = tcpSocket.SequenceIdCount + 1;
+            }
+            tcpSocket.sendTcpMessage(action, msg, sequenceId);
         } else {
             startTcpConnection();
         }
