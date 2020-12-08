@@ -2,8 +2,10 @@
 
 buildscript {
     repositories {
+        maven{url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+        maven{url "https://jitpack.io"}
         google()
-        jcenter()
+//        jcenter()
         // 添加仓库
         mavenCentral()
     }
@@ -20,8 +22,9 @@ buildscript {
 
 allprojects {
     repositories {
+        maven{url 'http://maven.aliyun.com/nexus/content/groups/public/'}
         google()
-        jcenter()
+//        jcenter()
         
     }
 }

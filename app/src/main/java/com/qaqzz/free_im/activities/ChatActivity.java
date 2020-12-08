@@ -606,7 +606,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                     return;
                 }
                 MessageBean messageStruct = new MessageBean();
-                messageStruct.setChatroom_id(chatroom_id);
+                messageStruct.setChatroomId(chatroom_id);
                 messageStruct.setCode(1);
                 messageStruct.setContent(inputText);
                 // 使用http请求获取消息ID , 临时使用
@@ -615,15 +615,15 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                     apiBase.post(new ApiListener() {
                         @Override
                         public void success(ApiUtil api, JSONObject response) {
-                            messageStruct.setMessage_id(apiBase.mInfo.getMessage_id());
+                            messageStruct.setMessageId(apiBase.mInfo.getMessage_id());
                             Gson gson = new Gson();
                             String jsonStr = gson.toJson(messageStruct);
                             // 发送消息
-                            SocketManager.getInstance(mContext).sendTcpMessage(4,jsonStr.getBytes());
+                            SocketManager.getInstance(mContext).sendTcpMessage(3,jsonStr.getBytes());
                             // 写入数据库
                             String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
                             MessageDao messageDao = Dao.getInstances(mContext).getDaoSession().getMessageDao();
-                            messageDao.insert(new Message(null, chatroom_id, uid, messageStruct.getMessage_id(), messageStruct.getContent(), 1, 0, "wait",1) );
+                            messageDao.insert(new Message(null, chatroom_id, uid, messageStruct.getMessageId(), messageStruct.getContent(), 1, 0, "wait",1) );
                             addText(1, inputText);
                         }
                     });

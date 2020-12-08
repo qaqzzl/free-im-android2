@@ -94,11 +94,11 @@ public class SocketManager {
                     String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
                     String device_id = DeviceUtil.getDeviceId(mContext);
                     AuthMessageBean AuthMessage = new AuthMessageBean();
-                    AuthMessage.setAccess_token(token);
-                    AuthMessage.setUser_id(uid);
-                    AuthMessage.setDevice_id(device_id);
-                    AuthMessage.setClient_type("android");
-                    AuthMessage.setDevice_type("mobile");
+                    AuthMessage.setAccessToken(token);
+                    AuthMessage.setUserId(uid);
+                    AuthMessage.setDeviceId(device_id);
+                    AuthMessage.setClientType("android");
+                    AuthMessage.setDeviceType("mobile");
 
                     // 连接认证
                     Gson gson = new Gson();
@@ -129,7 +129,7 @@ public class SocketManager {
     public void sendTcpMessage(final int action, final byte[] msg) {
         if (tcpSocket != null ) {
             int sequenceId = 0;
-            if (action == 4) {
+            if (action == 3) {
 //                tcpSocket.SequenceIdCount = tcpSocket.SequenceIdCount+1;
                 sequenceId = tcpSocket.SequenceIdCount + 1;
             }

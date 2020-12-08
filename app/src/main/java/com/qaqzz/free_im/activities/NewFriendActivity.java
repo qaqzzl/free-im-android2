@@ -79,6 +79,7 @@ public class NewFriendActivity extends BaseBackActivity {
                     viewHolder.getView(R.id.ll_agree).setVisibility(View.GONE);
                     viewHolder.getView(R.id.tv_result).setVisibility(View.VISIBLE);
                     viewHolder.setText(R.id.tv_result, getString(R.string.text_new_friend_no_agree));
+                    viewHolder.setImageResource(R.id.tv_result, R.drawable.img_tag_no_bg);
                 }
 
                 //同意

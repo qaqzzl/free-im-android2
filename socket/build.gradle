@@ -20,13 +20,13 @@ android {
     buildTypes {
         debug {
             //自定义Gradle常量
-            buildConfigField("String","HTTP_SERVER","\"http://172.20.10.2:8066\"")
-            buildConfigField("String","SOCKET_SERVER","\"172.20.10.2\"")
+            buildConfigField("String","HTTP_SERVER","\"http://192.168.2.248:8066\"")
+            buildConfigField("String","SOCKET_SERVER","\"192.168.2.248\"")
             buildConfigField("String","SOCKET_SERVER_PORT","\"1208\"")
         }
         release {
             buildConfigField("String","HTTP_SERVER","\"https://free-im.qaqzz.com:8066\"")
-            buildConfigField("String","SOCKET_SERVER","\"101.132.107.212\"")
+            buildConfigField("String","SOCKET_SERVER","\"free-im.qaqzz.com\"")
             buildConfigField("String","SOCKET_SERVER_PORT","\"1208\"")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

@@ -7,40 +7,40 @@ package com.qaqzz.socket.bean;
  * @date 2020/1/15 16:30
  */
 public class MessageBean {
-    private int code;
-    private String chatroom_id;
-    private String content;
-    private String message_id;
+    private int Code;
+    private String ChatroomId;
+    private String Content;
+    private String MessageId;
 
     public int getCode() {
-        return code;
+        return Code;
     }
 
-    public String getChatroom_id() {
-        return chatroom_id;
+    public String getChatroomId() {
+        return ChatroomId;
     }
 
     public String getContent() {
-        return content;
+        return Content;
     }
 
-    public String getMessage_id() {
-        return message_id;
+    public String getMessageId() {
+        return MessageId;
     }
 
     public void setCode(int code) {
-        this.code = code;
+        Code = code;
     }
 
-    public void setChatroom_id(String chatroom_id) {
-        this.chatroom_id = chatroom_id;
+    public void setChatroomId(String chatroomId) {
+        ChatroomId = chatroomId;
     }
 
     public void setContent(String content) {
-        this.content = content;
+        Content = content;
     }
 
-    public void setMessage_id(String message_id) {
-        this.message_id = message_id;
+    public void setMessageId(String messageId) {
+        MessageId = messageId;
     }
 }

@@ -7,49 +7,49 @@ package com.qaqzz.socket.bean;
  * @date 2020/1/15 16:53
  */
 public class AuthMessageBean {
-    private String device_id;
-    private String user_id;
-    private String access_token;
-    private String device_type;
-    private String client_type;
+    private String DeviceId;
+    private String UserId;
+    private String AccessToken;
+    private String DeviceType;
+    private String ClientType;
 
-    public String getDevice_type() {
-        return device_type;
+    public String getDeviceId() {
+        return DeviceId;
     }
 
-    public void setDevice_type(String device_type) {
-        this.device_type = device_type;
+    public void setDeviceId(String deviceId) {
+        DeviceId = deviceId;
     }
 
-    public String getClient_type() {
-        return client_type;
+    public String getUserId() {
+        return UserId;
     }
 
-    public void setClient_type(String client_type) {
-        this.client_type = client_type;
+    public void setUserId(String userId) {
+        UserId = userId;
     }
 
-    public String getDevice_id() {
-        return device_id;
+    public String getAccessToken() {
+        return AccessToken;
     }
 
-    public String getUser_id() {
-        return user_id;
+    public void setAccessToken(String accessToken) {
+        AccessToken = accessToken;
     }
 
-    public String getAccess_token() {
-        return access_token;
+    public String getDeviceType() {
+        return DeviceType;
     }
 
-    public void setDevice_id(String device_id) {
-        this.device_id = device_id;
+    public void setDeviceType(String deviceType) {
+        DeviceType = deviceType;
     }
 
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public String getClientType() {
+        return ClientType;
     }
 
-    public void setAccess_token(String access_token) {
-        this.access_token = access_token;
+    public void setClientType(String clientType) {
+        ClientType = clientType;
     }
 }

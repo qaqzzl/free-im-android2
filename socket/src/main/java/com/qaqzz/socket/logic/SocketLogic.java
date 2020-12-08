@@ -54,26 +54,27 @@ public class SocketLogic {
         int message_code = 0;
         String user_id = "";
         String me_uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        JSONObject message_json;
-        try {
-            message_json = new JSONObject(message);
-            chatroom_id = message_json.optString("chatroom_id");
-            message_id = message_json.optString("message_id");
-            content = message_json.optString("content");
-            message_send_time = message_json.optInt("message_send_time");
-            message_code = message_json.optInt("code");
-            user_id = message_json.optString("user_id");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
         MessageDao messageDao = Dao.getInstances(mContext).getDaoSession().getMessageDao();
         switch (action) {
-            case 5:      // 消息
+            case 3:      // 消息
+                JSONObject message_json;
+                try {
+                    message_json = new JSONObject(message);
+                    chatroom_id = message_json.optString("ChatroomId");
+                    message_id = message_json.optString("MessageId");
+                    content = message_json.optString("Content");
+                    message_send_time = message_json.optInt("MessageSendTime");
+                    message_code = message_json.optInt("Code");
+                    user_id = message_json.optString("UserId");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 // 判断消息是否存在
                 Message mMessage = messageDao.queryBuilder().where(MessageDao.Properties.Message_id.eq(message_id)).build().unique();
                 if (mMessage != null) {
                     // 消息回执
-                    SocketManager.getInstance(mContext).sendTcpMessage(7,message.getBytes());
+                    SocketManager.getInstance(mContext).sendTcpMessage(4,message_id.getBytes());
                     return;
                 }
 
@@ -82,7 +83,7 @@ public class SocketLogic {
                 // 记录聊天会话
                 Long timestamp = System.currentTimeMillis();//获取系统的当前时间戳
                 ChatRecordModel.getInstance(mContext).record(new ChatRecord(
-                        null, chatroom_id, timestamp, 0, null, null,0,null,timestamp
+                        null, chatroom_id, Long.valueOf(message_send_time), 0, null, null,0,null,timestamp
                 ));
 
                 // 消息事件
@@ -93,21 +94,18 @@ public class SocketLogic {
 
                 // 消息回执
                 Log.d("SOCKET", "消息回执");
-                SocketManager.getInstance(mContext).sendTcpMessage(7,message.getBytes());
+                SocketManager.getInstance(mContext).sendTcpMessage(4,message_id.getBytes());
                 break;
-            case 6:      //服务端消息回执
+            case 4:      //服务端消息回执
                 Log.d("SOCKET", "服务端消息回执");
                 // 更新消息数据库
-                mMessage = messageDao.queryBuilder().where(MessageDao.Properties.Message_id.eq(message_id)).build().unique();
+                mMessage = messageDao.queryBuilder().where(MessageDao.Properties.Message_id.eq(message)).build().unique();
                 if (mMessage != null) {
                     Long ts = new Date().getTime() / 1000;
                     mMessage.setMessage_send_time(ts.intValue());
                     mMessage.setMessage_status("success");
                     messageDao.update(mMessage);
                 }
-                break;
-            case 7:     // 客户端消息回执
-
                 break;
         }
     }
