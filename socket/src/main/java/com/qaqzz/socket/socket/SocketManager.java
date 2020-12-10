@@ -10,6 +10,7 @@ import com.qaqzz.socket.bean.AuthMessageBean;
 import com.qaqzz.socket.common.Config;
 import com.qaqzz.socket.listener.OnConnectionStateListener;
 import com.qaqzz.socket.listener.OnMessageReceiveListener;
+import com.qaqzz.socket.logic.SocketLogic;
 import com.qaqzz.socket.socket.tcp.TCPSocket;
 import com.qaqzz.socket.socket.udp.UDPSocket;
 import com.qaqzz.socket.utils.DeviceUtil;
@@ -105,7 +106,6 @@ public class SocketManager {
                     String jsonStr = gson.toJson(AuthMessage);
                     System.out.println(jsonStr);
                     tcpSocket.sendTcpMessage(10, jsonStr.getBytes(),0);
-
                     Log.d("SOCKET", "socket已连接");
                 }
 

@@ -11,8 +11,10 @@ public class Constants {
     public static final String SP_IS_FIRST_APP = "is_First_App";
     //Token
     public static final String SP_TOKEN = "token";
-    //Token
+    //Uid
     public static final String SP_USERID = "uid";
+    //Max MessageID
+    public static final String SP_MAX_MESSAGEID = "max_message_id";
     // 用户昵称
     public static final String SP_USER_NAME = "user_name";
     // 用户头像

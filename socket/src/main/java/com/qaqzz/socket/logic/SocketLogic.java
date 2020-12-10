@@ -28,6 +28,7 @@ import java.util.Date;
 public class SocketLogic {
     private Context mContext;
     private static volatile SocketLogic instance = null;
+    private boolean isSyncTrigger = false;
 
     private SocketLogic(Context context) {
         mContext = context;
@@ -70,6 +71,12 @@ public class SocketLogic {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                String max_message_id = SpUtils.getInstance().getString(Constants.SP_MAX_MESSAGEID, "");
+                if (message_id.compareTo(max_message_id) > 0 && this.isSyncTrigger) {
+                    SpUtils.getInstance().deleteKey(Constants.SP_MAX_MESSAGEID);
+                    SpUtils.getInstance().putString(Constants.SP_MAX_MESSAGEID, message_id);
+                }
+
                 // 判断消息是否存在
                 Message mMessage = messageDao.queryBuilder().where(MessageDao.Properties.Message_id.eq(message_id)).build().unique();
                 if (mMessage != null) {
@@ -79,7 +86,7 @@ public class SocketLogic {
                 }
 
                 // 写入消息数据库
-                messageDao.insert(new Message(null, chatroom_id, user_id, message_id, content, message_code, message_send_time, "success",0) );
+                messageDao.insert(new Message(null, chatroom_id, user_id, message_id, content, message_code, message_send_time, "success",0,0,0,0) );
                 // 记录聊天会话
                 Long timestamp = System.currentTimeMillis();//获取系统的当前时间戳
                 ChatRecordModel.getInstance(mContext).record(new ChatRecord(
@@ -107,6 +114,22 @@ public class SocketLogic {
                     messageDao.update(mMessage);
                 }
                 break;
+            case 10:      // 连接认证消息
+                // 认证成功
+                if (true) {
+                    Log.d("SOCKET", "连接认认证成功");
+                    SyncTrigger();
+                }
+                break;
         }
+    }
+
+    // 消息同步
+    public void SyncTrigger()
+    {
+        Log.d("SOCKET", "消息同步");
+        String message_id = SpUtils.getInstance().getString(Constants.SP_MAX_MESSAGEID, "");
+        SocketManager.getInstance(mContext).sendTcpMessage(2,message_id.getBytes());
+        this.isSyncTrigger = true;
     }
 }

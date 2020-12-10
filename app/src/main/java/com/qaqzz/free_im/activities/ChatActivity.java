@@ -623,7 +623,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                             // 写入数据库
                             String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
                             MessageDao messageDao = Dao.getInstances(mContext).getDaoSession().getMessageDao();
-                            messageDao.insert(new Message(null, chatroom_id, uid, messageStruct.getMessageId(), messageStruct.getContent(), 1, 0, "wait",1) );
+                            messageDao.insert(new Message(null, chatroom_id, uid, messageStruct.getMessageId(), messageStruct.getContent(), 1, 0, "wait",0,0,0,0) );
                             addText(1, inputText);
                         }
                     });
