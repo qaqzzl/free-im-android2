@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/free-im.iml" filepath="$PROJECT_DIR$/.idea/modules/free-im.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/free-im.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/free-im.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/framework/free-im.framework.iml" filepath="$PROJECT_DIR$/.idea/modules/framework/free-im.framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/socket/free-im.socket.iml" filepath="$PROJECT_DIR$/.idea/modules/socket/free-im.socket.iml" />
+    </modules>
+  </component>
+</project>
