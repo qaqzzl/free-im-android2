@@ -127,7 +127,7 @@ public class SocketLogic {
     // 消息同步
     public void SyncTrigger()
     {
-        Log.d("SOCKET", "消息同步");
+        Log.d("SOCKET", "消息同步");  
         String message_id = SpUtils.getInstance().getString(Constants.SP_MAX_MESSAGEID, "");
         SocketManager.getInstance(mContext).sendTcpMessage(2,message_id.getBytes());
         this.isSyncTrigger = true;
