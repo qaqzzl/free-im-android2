@@ -191,9 +191,13 @@ public class AddFriendActivity extends BaseBackActivity implements View.OnClickL
                         mList.clear();
                         include_empty_view.setVisibility(View.GONE);
                         mSearchResultView.setVisibility(View.VISIBLE);
+                        addTitle(getString(R.string.text_add_friend_title));
+                        String me_uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
                         for (int i=0; i < search_list.size(); i++ ) {
                             SearchFriendBean.SearchListBean m = search_list.get(i);
-                            addTitle(getString(R.string.text_add_friend_title));
+                            if (me_uid == m.getMember_id()) {
+                                continue;
+                            }
                             addContent(m);
                             mAddFriendAdapter.notifyDataSetChanged();
                         }

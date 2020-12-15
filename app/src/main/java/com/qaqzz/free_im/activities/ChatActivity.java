@@ -494,7 +494,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
         // 记录聊天会话
         Long timestamp = System.currentTimeMillis();//获取系统的当前时间戳
         ChatRecordModel.getInstance(this).record(new ChatRecord(
-                null, chatroom_id, timestamp, 0, yourUserPhoto, yourUserName,0,null,timestamp
+                null, chatroom_id, timestamp, 1, yourUserPhoto, yourUserName,0,null,timestamp
         ));
     }
 

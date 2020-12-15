@@ -1,7 +1,6 @@
 package com.qaqzz.socket.socket.tcp;
 
 import android.content.Context;
-import android.os.Message;
 import android.util.Log;
 
 import com.qaqzz.socket.common.Config;
@@ -9,22 +8,14 @@ import com.qaqzz.socket.listener.OnConnectionStateListener;
 import com.qaqzz.socket.logic.SocketLogic;
 import com.qaqzz.socket.utils.HeartbeatTimer;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -114,43 +105,23 @@ public class TCPSocket {
                         if (bis == null ) {
                             continue;
                         }
-                        byte buffer[] = new byte[2048];
-                        int frameSize = 0;
-                        byte[] mRecvBuffer = {0};
+                        byte[] buffer = new byte[2048];
+                        byte[] tmp_buffer = {};
                         int mActualReadSize = 0;
                         int readSize = 0;
-                        int headInt = 13;
-                        int action = 0;
                         //接受服务端消息
                         while((readSize = bis.read(buffer)) != -1) {
                             mActualReadSize = 0;
-                            if( readSize >= headInt ){
-                                frameSize = ( (buffer[9] & 0xff) << 24 | (buffer[10] & 0xff) << 16 | (buffer[11] & 0xff) << 8 | (buffer[12] & 0xff) );
-                                action = (buffer[4] & 0xff);
+                            Log.d(TAG, "接收 buffer：" + readSize);
+                            if (tmp_buffer == null || tmp_buffer.length == 0) {
+                                tmp_buffer = MessageWhile(buffer, readSize, mActualReadSize);
+                            } else {
+                                Log.d(TAG, "接收 tmp_buffer：" + tmp_buffer.length);
+                                byte[] data = new byte[tmp_buffer.length + buffer.length];
+                                System.arraycopy(tmp_buffer, 0, data, 0, tmp_buffer.length);
+                                System.arraycopy(buffer, 0, data, tmp_buffer.length, buffer.length);
+                                tmp_buffer = MessageWhile(data, tmp_buffer.length+readSize, mActualReadSize);
                             }
-                            while( readSize >= frameSize + headInt ) {
-                                mRecvBuffer = new byte[frameSize + headInt];
-                                System.arraycopy(buffer, mActualReadSize, mRecvBuffer, 0, frameSize + headInt);
-                                mActualReadSize += frameSize + headInt;
-
-                                int surplusLength = readSize - (frameSize + headInt);
-                                readSize -=  (frameSize + headInt);
-                                if( surplusLength >= headInt ){
-                                    int head = ((buffer[mActualReadSize] & 0xff) << headInt) | buffer[mActualReadSize + 1];
-//                                    if( head == 0xA66A ){
-                                    if( head == 13 ){
-                                        frameSize = 0;
-                                        frameSize = ( (buffer[mActualReadSize + 9] & 0xff) << 24 | (buffer[ mActualReadSize + 10] & 0xff) << 16 | (buffer[ mActualReadSize + 11] & 0xff) << 8 | (buffer[ mActualReadSize + 12] & 0xff) );
-                                        action = (buffer[mActualReadSize + 4] & 0xff);
-                                    }else{
-                                        break;
-                                    }
-                                }
-                            }
-
-                            String str = new String(mRecvBuffer, headInt, mActualReadSize-headInt);
-                            // 消息处理
-                            handleReceiveTcpMessage(action, str);
                         }
                     }
 
@@ -159,6 +130,50 @@ public class TCPSocket {
                 }
             }
         });
+    }
+
+    /**
+     *
+     * @param buffer
+     * @param readSize
+     * @param startReadSize
+     * @return buffer
+     */
+    private byte[] MessageWhile(byte[] buffer, int readSize, int startReadSize) {
+        int headInt = 13;
+        int frameSize = 0;
+        int action = 0;
+        if( readSize >= headInt ){
+            frameSize = ( (buffer[startReadSize + 9] & 0xff) << 24 | (buffer[ startReadSize + 10] & 0xff) << 16 | (buffer[ startReadSize + 11] & 0xff) << 8 | (buffer[ startReadSize + 12] & 0xff) );
+            action = (buffer[startReadSize + 4] & 0xff);
+        } else {
+            byte[] tmpRecvBuffer = new byte[readSize];
+            System.arraycopy(buffer, startReadSize, tmpRecvBuffer, 0, readSize);
+            return tmpRecvBuffer;
+        }
+        if (readSize < frameSize + headInt) {
+            byte[] tmpRecvBuffer = new byte[readSize];
+            System.arraycopy(buffer, startReadSize, tmpRecvBuffer, 0, readSize);
+            return tmpRecvBuffer;
+        }
+        Log.d(TAG, "接收 readSize：" + readSize);
+        Log.d(TAG, "接收 frameSize + headInt：" + (frameSize + headInt));
+        byte[] mRecvBuffer = new byte[frameSize + headInt];
+        System.arraycopy(buffer, startReadSize, mRecvBuffer, 0, frameSize + headInt);
+
+        String str = new String(mRecvBuffer, headInt, frameSize);
+        // 消息处理
+        Log.d(TAG, "接收 str：" + str);
+        handleReceiveTcpMessage(action, str);
+
+        startReadSize += frameSize + headInt;
+        int surplusLength = readSize - (frameSize + headInt);
+        Log.d(TAG, "接收 startReadSize：" + startReadSize);
+        Log.d(TAG, "接收 surplusLength：" + surplusLength);
+        if( surplusLength > 0 ){
+            return MessageWhile(buffer, surplusLength, startReadSize);
+        }
+        return null;
     }
 
     /**

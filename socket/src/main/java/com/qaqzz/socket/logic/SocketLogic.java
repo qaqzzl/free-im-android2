@@ -70,6 +70,7 @@ public class SocketLogic {
                     user_id = message_json.optString("UserId");
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    break;
                 }
                 String max_message_id = SpUtils.getInstance().getString(Constants.SP_MAX_MESSAGEID, "");
                 if (message_id.compareTo(max_message_id) > 0 && this.isSyncTrigger) {
@@ -90,7 +91,7 @@ public class SocketLogic {
                 // 记录聊天会话
                 Long timestamp = System.currentTimeMillis();//获取系统的当前时间戳
                 ChatRecordModel.getInstance(mContext).record(new ChatRecord(
-                        null, chatroom_id, Long.valueOf(message_send_time), 0, null, null,0,null,timestamp
+                        null, chatroom_id, Long.valueOf(message_send_time), 1, null, null,0,null,timestamp
                 ));
 
                 // 消息事件

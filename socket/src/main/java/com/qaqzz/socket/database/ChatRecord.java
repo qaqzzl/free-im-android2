@@ -19,7 +19,7 @@ public class ChatRecord {
 
     private Long last_open_time;     // 上次打开聊天室时间
     @NotNull
-    private int chat_type;       // 聊天室类型, 0:普通(单聊), 1:群组(群聊)
+    private int chat_type;       // 聊天室类型, 1:普通(单聊), 2:群组(群聊)
     private String avatar;          // 聊天室头像
     private String name;            // 聊天室名称
     private int is_top;             // 是否置顶 1:是, 0:否
