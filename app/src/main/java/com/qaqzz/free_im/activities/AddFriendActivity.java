@@ -195,7 +195,7 @@ public class AddFriendActivity extends BaseBackActivity implements View.OnClickL
                         String me_uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
                         for (int i=0; i < search_list.size(); i++ ) {
                             SearchFriendBean.SearchListBean m = search_list.get(i);
-                            if (me_uid == m.getMember_id()) {
+                            if (me_uid.equals(m.getMember_id())) {
                                 continue;
                             }
                             addContent(m);

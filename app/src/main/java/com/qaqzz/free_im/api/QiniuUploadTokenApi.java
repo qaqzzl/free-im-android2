@@ -15,11 +15,12 @@ import org.json.JSONObject;
  */
 public class QiniuUploadTokenApi extends ApiUtil {
     public QiniuUploadTokenBase mInfo = new QiniuUploadTokenBase();
-    public QiniuUploadTokenApi(){
+    public QiniuUploadTokenApi(String type){
         String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
         String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
         addParam("uid",uid);
         addParam("access_token",token);
+        addParam("type",type);
     }
 
     @Override

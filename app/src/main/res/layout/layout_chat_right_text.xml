@@ -4,31 +4,47 @@
     android:background="@color/color_background"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:gravity="center_vertical|right"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tv_right_text"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:gravity="right"
-            android:text="Null"
-            android:textColor="@color/color_text"
-            android:textSize="16sp" />
+            android:layout_marginLeft="20dp"
+            android:gravity="center_vertical|right"
+            android:orientation="horizontal">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/iv_right_photo"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginRight="10dp"
-            android:src="@mipmap/ic_free" />
+            <LinearLayout
+                android:id="@+id/message_send_failed"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="60dp"
+                >
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/message_send_failed" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_right_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="NullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNullNull"
+                android:background="@color/color_bottom_text"
+                android:padding="5dp"
+                android:textColor="@color/color_text"
+                android:textSize="16sp" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/iv_right_photo"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="10dp"
+                android:src="@mipmap/ic_free" />
 
 
-    </LinearLayout>
+        </LinearLayout>
+
+
 </RelativeLayout>

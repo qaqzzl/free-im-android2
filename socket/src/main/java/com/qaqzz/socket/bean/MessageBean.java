@@ -11,6 +11,7 @@ public class MessageBean {
     private String ChatroomId;
     private String Content;
     private String MessageId;
+    private int MessageSendTime;
 
     public int getCode() {
         return Code;
@@ -42,5 +43,13 @@ public class MessageBean {
 
     public void setMessageId(String messageId) {
         MessageId = messageId;
+    }
+
+    public int getMessageSendTime() {
+        return MessageSendTime;
+    }
+
+    public void setMessageSendTime(int messageSendTime) {
+        MessageSendTime = messageSendTime;
     }
 }

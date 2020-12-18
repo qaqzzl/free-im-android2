@@ -268,7 +268,7 @@ public class MeInfoActivity extends BaseBackActivity implements View.OnClickList
             if (uploadPhotoFile != null) {
                 try{
                 // 获取七牛上传token
-                    QiniuUploadTokenApi apiBase = new QiniuUploadTokenApi();
+                    QiniuUploadTokenApi apiBase = new QiniuUploadTokenApi("public");
                     apiBase.post(new ApiListener() {
                         @Override
                         public void success(ApiUtil api, JSONObject response) {

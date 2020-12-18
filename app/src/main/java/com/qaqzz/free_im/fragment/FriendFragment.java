@@ -1,9 +1,11 @@
 package com.qaqzz.free_im.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,6 +19,7 @@ import com.qaqzz.framework.event.EventManager;
 import com.qaqzz.framework.event.MessageEvent;
 import com.qaqzz.framework.utils.CommonUtils;
 import com.qaqzz.free_im.R;
+import com.qaqzz.free_im.activities.AddFriendActivity;
 import com.qaqzz.free_im.activities.UserInfoActivity;
 import com.qaqzz.free_im.api.FriendListApi;
 import com.qaqzz.free_im.bean.FriendListBean;
@@ -36,11 +39,12 @@ import java.util.List;
  * Founder: LiuGuiLin
  * Profile: 所有联系人
  */
-public class FriendFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class FriendFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
     private View item_empty_view;
     private RecyclerView mAllFriendView;
     private SwipeRefreshLayout mAllFriendRefreshLayout;
+    private ImageView iv_add;
 
     private CommonAdapter<FriendListBean.FriendBean> mAllFriendAdapter;
     private List<FriendListBean.FriendBean> mList = new ArrayList<>();
@@ -57,6 +61,9 @@ public class FriendFragment extends BaseFragment implements SwipeRefreshLayout.O
         item_empty_view = view.findViewById(R.id.item_empty_view);
         mAllFriendView = view.findViewById(R.id.mAllFriendView);
         mAllFriendRefreshLayout = view.findViewById(R.id.mAllFriendRefreshLayout);
+        iv_add = view.findViewById(R.id.iv_add);
+
+        iv_add.setOnClickListener(this);
 
         mAllFriendRefreshLayout.setOnRefreshListener(this);
 
@@ -139,7 +146,15 @@ public class FriendFragment extends BaseFragment implements SwipeRefreshLayout.O
             ex.printStackTrace();
         }
     }
-
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.iv_add:
+                //添加好友
+                startActivity(new Intent(getActivity(), AddFriendActivity.class));
+                break;
+        }
+    }
 
     @Override
     public void onRefresh() {

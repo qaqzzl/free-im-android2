@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -32,6 +34,7 @@ import com.qaqzz.free_im.api.FriendIdGetChatroomIdApi;
 
 import com.qaqzz.free_im.api.GetChatroomIdApi;
 import com.qaqzz.free_im.api.LoginApi;
+import com.qaqzz.free_im.api.QiniuUploadTokenApi;
 import com.qaqzz.free_im.http.api.ApiListener;
 import com.qaqzz.free_im.http.api.ApiUtil;
 import com.qaqzz.socket.bean.MessageBean;
@@ -41,6 +44,10 @@ import com.qaqzz.socket.database.Message;
 import com.qaqzz.socket.database.MessageDao;
 import com.qaqzz.socket.database.model.ChatRecordModel;
 import com.qaqzz.socket.socket.SocketManager;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.Configuration;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UploadManager;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -194,6 +201,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
         private String address;
         private String mapUrl;
 
+        private String message_status;
         //...
 
 
@@ -260,6 +268,14 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
         public void setText(String text) {
             this.text = text;
         }
+
+        public String getMessage_status() {
+            return message_status;
+        }
+
+        public void setMessage_status(String message_status) {
+            this.message_status = message_status;
+        }
     }
 
     protected void initWidget() {
@@ -297,6 +313,11 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                         viewHolder.setImageUrl(ChatActivity.this, R.id.iv_left_photo, yourUserPhoto);
                         break;
                     case TYPE_RIGHT_TEXT:
+                        if (model.getMessage_status().equals("failed")) {
+                            viewHolder.getView(R.id.message_send_failed).setVisibility(View.VISIBLE);
+                        } else {
+                            viewHolder.getView(R.id.message_send_failed).setVisibility(View.INVISIBLE);
+                        }
                         viewHolder.setText(R.id.tv_right_text, model.getText());
                         viewHolder.setImageUrl(ChatActivity.this, R.id.iv_right_photo, meUserPhoto);
                         break;
@@ -513,13 +534,12 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
             String me_uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");      // 我的ID
             switch (m.getMessage_code()) {
                 case 1:         // 普通文本
-                    String msg = m.getContent();
                     try {
                         //添加到UI 判断是你 还是 我
                         if (objectUserId.equals(me_uid)) {
-                            addText(1, msg);
+                            addText(1, m.getContent(),"");
                         } else {
-                            addText(0, msg);
+                            addText(0, m.getContent(),"");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -605,33 +625,8 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 if (TextUtils.isEmpty(inputText)) {
                     return;
                 }
-                MessageBean messageStruct = new MessageBean();
-                messageStruct.setChatroomId(chatroom_id);
-                messageStruct.setCode(1);
-                messageStruct.setContent(inputText);
-                // 使用http请求获取消息ID , 临时使用
-                try{
-                    GetChatroomIdApi apiBase = new GetChatroomIdApi(chatroom_id);
-                    apiBase.post(new ApiListener() {
-                        @Override
-                        public void success(ApiUtil api, JSONObject response) {
-                            messageStruct.setMessageId(apiBase.mInfo.getMessage_id());
-                            Gson gson = new Gson();
-                            String jsonStr = gson.toJson(messageStruct);
-                            // 发送消息
-                            SocketManager.getInstance(mContext).sendTcpMessage(3,jsonStr.getBytes());
-                            // 写入数据库
-                            String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-                            MessageDao messageDao = Dao.getInstances(mContext).getDaoSession().getMessageDao();
-                            messageDao.insert(new Message(null, chatroom_id, uid, messageStruct.getMessageId(), messageStruct.getContent(), 1, 0, "wait",0,0,0,0) );
-                            addText(1, inputText);
-                        }
-                    });
-                }catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
-
+                sendMessage(inputText,1);
+                addText(1, inputText,"");
                 //清空消息文本框
                 et_input_msg.setText("");
                 break;
@@ -666,7 +661,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
 //                FileHelper.getInstance().toCamera(this);
                 break;
             case R.id.ll_pic:           // 图片
-//                FileHelper.getInstance().toAlbum(this);
+                FileHelper.getInstance().toAlbum(this);
                 break;
             case R.id.ll_location:      // 位置
 //                LocationActivity.startActivity(this, true, 0, 0, "", LOCATION_REQUEST_CODE);
@@ -692,7 +687,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
      * @param index 0:左边 1:右边
      * @param text
      */
-    private void addText(int index, String text) {
+    private void addText(int index, String text, String messge_status) {
         ChatModel model = new ChatModel();
         if (index == 0) {
             model.setType(TYPE_LEFT_TEXT);
@@ -700,6 +695,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
             model.setType(TYPE_RIGHT_TEXT);
         }
         model.setText(text);
+        model.setMessage_status(messge_status);
         baseAddItem(model);
     }
 
@@ -709,7 +705,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
      * @param index
      * @param url
      */
-    private void addImage(int index, String url) {
+    private void addImage(int index, String url, String messge_status) {
         ChatModel model = new ChatModel();
         if (index == 0) {
             model.setType(TYPE_LEFT_IMAGE);
@@ -717,6 +713,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
             model.setType(TYPE_RIGHT_IMAGE);
         }
         model.setImgUrl(url);
+        model.setMessage_status(messge_status);
         baseAddItem(model);
     }
 
@@ -726,7 +723,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
      * @param index
      * @param file
      */
-    private void addImage(int index, File file) {
+    private void addImage(int index, File file, String messge_status) {
         ChatModel model = new ChatModel();
         if (index == 0) {
             model.setType(TYPE_LEFT_IMAGE);
@@ -734,6 +731,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
             model.setType(TYPE_RIGHT_IMAGE);
         }
         model.setLocalFile(file);
+        model.setMessage_status(messge_status);
         baseAddItem(model);
     }
 
@@ -785,10 +783,10 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
 //        Log.d("消息事件", event.getContent());
         switch (event.getType()) {
             case EventManager.FLAG_SEND_TEXT:
-                addText(index, event.getContent());
+                addText(index, event.getContent(),"");
                 break;
             case EventManager.FLAG_SEND_IMAGE:
-                addImage(index, event.getImgUrl());
+                addImage(index, event.getImgUrl(),"");
                 break;
             case EventManager.FLAG_SEND_LOCATION:
                 addLocation(index, event.getLa(), event.getLo(), event.getAddress());
@@ -807,7 +805,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                     //String path = uri.getPath();
                     //获取真实的地址
                     String path = FileHelper.getInstance().getRealPathFromURI(this, uri);
-                    //LogUtils.e("path:" + path);
+                    LogUtils.e("path:" + path);
                     if (!TextUtils.isEmpty(path)) {
                         uploadFile = new File(path);
                     }
@@ -839,11 +837,46 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
             } else if (requestCode == CHAT_INFO_REQUEST_CODE) {
                 finish();
             }
-            if (uploadFile != null) {
-                //发送图片消息
-//                CloudManager.getInstance().sendImageMessage(yourUserId, uploadFile);
-                //更新列表
-                addImage(1, uploadFile);
+            if (uploadFile.exists()) {
+                // 上传文件
+                try{
+                    // 获取七牛上传token
+                    QiniuUploadTokenApi apiBase = new QiniuUploadTokenApi("public");
+                    apiBase.post(new ApiListener() {
+                        @Override
+                        public void success(ApiUtil api, JSONObject response) {
+                            if (apiBase.mInfo.getCode().equals("0")) {
+                                Configuration config = new Configuration.Builder().build();
+                                UploadManager uploadManager = new UploadManager(config, 3);
+                                String key = null;
+                                String token = apiBase.mInfo.getToken();
+                                uploadManager.put(uploadFile, key, token,
+                                        new UpCompletionHandler() {
+                                            @Override
+                                            public void complete(String key, ResponseInfo info, JSONObject res) {
+                                                //res包含hash、key等信息，具体字段取决于上传策略的设置
+                                                if(info.isOK()) {
+                                                    Log.i("qiniu", "Upload Success" +res.toString());
+                                                    // 发送图片消息
+//                                                        sendMessage(apiBase.mInfo.getDomain()+res.optString("key"),2);
+                                                } else {
+                                                    Log.i("qiniu", "Upload Fail");
+                                                    Toast.makeText(ChatActivity.this, "文件上传失败", Toast.LENGTH_SHORT).show();
+                                                    //如果失败，这里可以把info信息上报自己的服务器，便于后面分析上传错误原因
+                                                }
+                                                Log.i("qiniu", key + ",\r\n " + info + ",\r\n " + res);
+                                            }
+                                        }, null);
+                            } else {
+                                Toast.makeText(ChatActivity.this, apiBase.mInfo.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                // 更新列表
+                addImage(1, uploadFile,"");
                 uploadFile = null;
             }
         }
@@ -859,25 +892,96 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_chat_menu:
-                //ChatInfoActivity.startChatInfo(this, yourUserId, CHAT_INFO_REQUEST_CODE);
-                break;
-            case R.id.menu_chat_audio:
+//            case R.id.menu_chat_menu:
+//                ChatInfoActivity.startChatInfo(this, yourUserId, CHAT_INFO_REQUEST_CODE);
+//                break;
+//            case R.id.menu_chat_audio:
 //                if (!checkWindowPermissions()) {
 //                    requestWindowPermissions();
 //                } else {
 //                    CloudManager.getInstance().startAudioCall(this, yourUserId);
 //                }
-                break;
-            case R.id.menu_chat_video:
+//                break;
+//            case R.id.menu_chat_video:
 //                if (!checkWindowPermissions()) {
 //                    requestWindowPermissions();
 //                } else {
 //                    CloudManager.getInstance().startVideoCall(this, yourUserId);
 //                }
-                break;
+//                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void upload(File uploadPhotoFile)
+    {
+        try{
+            // 获取七牛上传token
+            QiniuUploadTokenApi apiBase = new QiniuUploadTokenApi("public");
+            apiBase.post(new ApiListener() {
+                @Override
+                public void success(ApiUtil api, JSONObject response) {
+                    if (apiBase.mInfo.getCode().equals("0")) {
+                        Configuration config = new Configuration.Builder().build();
+                        UploadManager uploadManager = new UploadManager(config, 3);
+                        String key = null;
+                        String token = apiBase.mInfo.getToken();
+                        uploadManager.put(uploadPhotoFile, key, token,
+                                new UpCompletionHandler() {
+                                    @Override
+                                    public void complete(String key, ResponseInfo info, JSONObject res) {
+                                        //res包含hash、key等信息，具体字段取决于上传策略的设置
+                                        if(info.isOK()) {
+                                            Log.i("qiniu", "Upload Success" +res.toString());
+//                                            apiBase.mInfo.getDomain()+res.optString("key");
+                                        } else {
+                                            Log.i("qiniu", "Upload Fail");
+                                            Toast.makeText(ChatActivity.this, "文件上传失败", Toast.LENGTH_SHORT).show();
+                                            //如果失败，这里可以把info信息上报自己的服务器，便于后面分析上传错误原因
+                                        }
+                                        Log.i("qiniu", key + ",\r\n " + info + ",\r\n " + res);
+                                    }
+                                }, null);
+                    } else {
+                        Toast.makeText(ChatActivity.this, apiBase.mInfo.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void sendMessage(String content, int code)
+    {
+        Context mContext = this;
+        Long timestamp = System.currentTimeMillis() / 1000;//获取系统的当前时间戳
+        MessageBean messageStruct = new MessageBean();
+        messageStruct.setChatroomId(chatroom_id);
+        messageStruct.setCode(1);
+        messageStruct.setContent(content);
+        messageStruct.setMessageSendTime(timestamp.intValue());
+        // 使用http请求获取消息ID , 临时使用
+        try{
+            GetChatroomIdApi apiBase = new GetChatroomIdApi(chatroom_id);
+            apiBase.post(new ApiListener() {
+                @Override
+                public void success(ApiUtil api, JSONObject response) {
+                    messageStruct.setMessageId(apiBase.mInfo.getMessage_id());
+                    Gson gson = new Gson();
+                    String jsonStr = gson.toJson(messageStruct);
+                    // 发送消息
+                    SocketManager.getInstance(mContext).sendTcpMessage(3,jsonStr.getBytes());
+                    // 写入数据库
+                    String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
+                    MessageDao messageDao = Dao.getInstances(mContext).getDaoSession().getMessageDao();
+                    Long timestamp = System.currentTimeMillis() / 1000;//获取系统的当前时间戳
+                    messageDao.insert(new Message(null, chatroom_id, uid, messageStruct.getMessageId(), messageStruct.getContent(), code, timestamp.intValue(), "wait",0,0,0,1) );
+                }
+            });
+        }catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
 }
