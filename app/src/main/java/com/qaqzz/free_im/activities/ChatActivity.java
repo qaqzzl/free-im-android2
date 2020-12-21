@@ -25,7 +25,10 @@ import com.qaqzz.framework.base.BaseBackActivity;
 import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.event.EventManager;
 import com.qaqzz.framework.event.MessageEvent;
+import com.qaqzz.framework.gson.VoiceBean;
 import com.qaqzz.framework.helper.FileHelper;
+import com.qaqzz.framework.manager.MapManager;
+import com.qaqzz.framework.manager.VoiceManager;
 import com.qaqzz.framework.utils.LogUtils;
 import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.MainActivity;
@@ -368,8 +371,8 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-//                                LocationActivity.startActivity(ChatActivity.this, false,
-//                                        model.getLa(), model.getLo(), model.getAddress(), LOCATION_REQUEST_CODE);
+                                LocationActivity.startActivity(ChatActivity.this, false,
+                                        model.getLa(), model.getLo(), model.getAddress(), LOCATION_REQUEST_CODE);
                             }
                         });
 
@@ -383,8 +386,8 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-//                                LocationActivity.startActivity(ChatActivity.this, false,
-//                                        model.getLa(), model.getLo(), model.getAddress(), LOCATION_REQUEST_CODE);
+                                LocationActivity.startActivity(ChatActivity.this, false,
+                                        model.getLa(), model.getLo(), model.getAddress(), LOCATION_REQUEST_CODE);
                             }
                         });
                         break;
@@ -546,16 +549,15 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                     }
                     break;
                 case 2:     // 图片
-//                    ImageMessage imageMessage = (ImageMessage) m.getContent();
-//                    String url = imageMessage.getRemoteUri().toString();
-//                    if (!TextUtils.isEmpty(url)) {
+                    String url = m.getContent();
+                    if (!TextUtils.isEmpty(url)) {
 //                        LogUtils.i("url:" + url);
-//                        if (m.getSenderUserId().equals(yourUserId)) {
-//                            addImage(0, url);
-//                        } else {
-//                            addImage(1, url);
-//                        }
-//                    }
+                        if (objectUserId.equals(me_uid)) {
+                            addImage(1, url);
+                        } else {
+                            addImage(0, url);
+                        }
+                    }
                     break;
                 case 3:     // 位置
 //                    LocationMessage locationMessage = (LocationMessage) m.getContent();
@@ -630,7 +632,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 //清空消息文本框
                 et_input_msg.setText("");
                 break;
-            case R.id.ll_voice:         // 语音
+            case R.id.ll_voice:         // 语音 - 现在的语音是把语音转换成文字  晕了... 以后改
 //                VoiceManager.getInstance(this).startSpeak(new RecognizerDialogListener() {
 //                    @Override
 //                    public void onResult(RecognizerResult recognizerResult, boolean b) {
@@ -658,13 +660,13 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
 //                });
                 break;
             case R.id.ll_camera:        // 拍照
-//                FileHelper.getInstance().toCamera(this);
+                FileHelper.getInstance().toCamera(this);
                 break;
             case R.id.ll_pic:           // 图片
                 FileHelper.getInstance().toAlbum(this);
                 break;
             case R.id.ll_location:      // 位置
-//                LocationActivity.startActivity(this, true, 0, 0, "", LOCATION_REQUEST_CODE);
+                LocationActivity.startActivity(this, true, 0, 0, "", LOCATION_REQUEST_CODE);
                 break;
         }
     }
@@ -716,6 +718,17 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
         model.setMessage_status(messge_status);
         baseAddItem(model);
     }
+    private void addImage(int index, String url) {
+        ChatModel model = new ChatModel();
+        if (index == 0) {
+            model.setType(TYPE_LEFT_IMAGE);
+        } else {
+            model.setType(TYPE_RIGHT_IMAGE);
+        }
+        model.setImgUrl(url);
+        model.setMessage_status("");
+        baseAddItem(model);
+    }
 
     /**
      * 添加图片
@@ -754,7 +767,11 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
         model.setLo(lo);
         model.setAddress(address);
 //        model.setMapUrl(MapManager.getInstance().getMapUrl(la, lo));
+        model.setMessage_status("");
         baseAddItem(model);
+    }
+    private void addLocation(int index, String address) {
+
     }
 
     // 设置消息为已读
@@ -786,10 +803,10 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 addText(index, event.getContent(),"");
                 break;
             case EventManager.FLAG_SEND_IMAGE:
-                addImage(index, event.getImgUrl(),"");
+                addImage(index, event.getContent(),"");
                 break;
             case EventManager.FLAG_SEND_LOCATION:
-                addLocation(index, event.getLa(), event.getLo(), event.getAddress());
+                addLocation(index, event.getContent());
                 break;
         }
     }
@@ -819,25 +836,28 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 LogUtils.i("lo:" + lo);
                 LogUtils.i("address:" + address);
 
-//                if (TextUtils.isEmpty(address)) {
-//                    MapManager.getInstance().poi2address(la, lo, new MapManager.OnPoi2AddressGeocodeListener() {
-//                        @Override
-//                        public void poi2address(String address) {
-//                            //发送位置消息
-//                            CloudManager.getInstance().sendLocationMessage(yourUserId, la, lo, address);
-//                            addLocation(1, la, lo, address);
-//                        }
-//                    });
-//                } else {
-//                    //发送位置消息
-//                    CloudManager.getInstance().sendLocationMessage(yourUserId, la, lo, address);
-//                    addLocation(1, la, lo, address);
-//                }
+                if (TextUtils.isEmpty(address)) {
+                    MapManager.getInstance().poi2address(la, lo, new MapManager.OnPoi2AddressGeocodeListener() {
+                        @Override
+                        public void poi2address(String address) {
+                            //发送位置消息
+                            sendMessage(la+":"+lo+":"+address,3);
+                            addLocation(1, la, lo, address);
+                        }
+                    });
+                } else {
+                    //发送位置消息
+                    sendMessage(la+":"+lo+":"+address,3);
+                    addLocation(1, la, lo, address);
+                }
 
             } else if (requestCode == CHAT_INFO_REQUEST_CODE) {
                 finish();
             }
-            if (uploadFile.exists()) {
+
+            // 图片
+            if (uploadFile != null ) {
+                File uploadFilecody = uploadFile;
                 // 上传文件
                 try{
                     // 获取七牛上传token
@@ -850,15 +870,14 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                                 UploadManager uploadManager = new UploadManager(config, 3);
                                 String key = null;
                                 String token = apiBase.mInfo.getToken();
-                                uploadManager.put(uploadFile, key, token,
+                                uploadManager.put(uploadFilecody, key, token,
                                         new UpCompletionHandler() {
                                             @Override
                                             public void complete(String key, ResponseInfo info, JSONObject res) {
                                                 //res包含hash、key等信息，具体字段取决于上传策略的设置
                                                 if(info.isOK()) {
-                                                    Log.i("qiniu", "Upload Success" +res.toString());
                                                     // 发送图片消息
-//                                                        sendMessage(apiBase.mInfo.getDomain()+res.optString("key"),2);
+                                                    sendMessage(apiBase.mInfo.getDomain()+res.optString("key"),2);
                                                 } else {
                                                     Log.i("qiniu", "Upload Fail");
                                                     Toast.makeText(ChatActivity.this, "文件上传失败", Toast.LENGTH_SHORT).show();
@@ -958,7 +977,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
         Long timestamp = System.currentTimeMillis() / 1000;//获取系统的当前时间戳
         MessageBean messageStruct = new MessageBean();
         messageStruct.setChatroomId(chatroom_id);
-        messageStruct.setCode(1);
+        messageStruct.setCode(code);
         messageStruct.setContent(content);
         messageStruct.setMessageSendTime(timestamp.intValue());
         // 使用http请求获取消息ID , 临时使用

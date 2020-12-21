@@ -28,6 +28,11 @@
             android:name="notch.config"
             android:value="portrait|landscape" />
 
+        <!-- 高德地图-->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="6ef91b82a91ec7a712cf3705148889eb"/>
+
         <!--引导页-->
         <activity
             android:name=".activities.IndexActivity"
@@ -66,6 +71,11 @@
         <!--聊天室-->
         <activity
             android:name=".activities.ChatActivity"
+            android:launchMode="singleTask" />
+
+        <!--位置-->
+        <activity
+            android:name=".activities.LocationActivity"
             android:launchMode="singleTask" />
 
         <!--添加好友-->
@@ -117,4 +127,17 @@
     </application>
 <!--    Android 全局弹出对话框SYSTEM_ALERT_WINDOW权限-->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+<!--    //高德地图 地图包、搜索包需要的基础权限-->
+    <!--允许程序打开网络套接字-->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!--允许程序设置内置sd卡的写权限-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--允许程序获取网络状态-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--允许程序访问WiFi网络信息-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--允许程序读写手机状态和身份-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!--允许程序访问CellID或WiFi热点来获取粗略的位置-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 </manifest>
