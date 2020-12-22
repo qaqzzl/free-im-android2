@@ -241,7 +241,7 @@ public class LocationActivity extends BaseBackActivity implements View.OnClickLi
      */
     private void poiSearch(String keyWord) {
         mLodingView.show();
-        query = new PoiSearch.Query(keyWord, "", "");
+        query = new PoiSearch.Query(keyWord, "");
         query.setPageSize(6);
         query.setPageNum(1);
         poiSearch = new PoiSearch(this, query);

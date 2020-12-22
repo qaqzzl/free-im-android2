@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +25,11 @@ import com.qaqzz.free_im.R;
 import com.qaqzz.free_im.api.LoginApi;
 import com.qaqzz.free_im.http.api.ApiListener;
 import com.qaqzz.free_im.http.api.ApiUtil;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -61,6 +66,8 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
 
     private TextView tv_password_login;
 
+    private ImageButton ic_qq;
+
     private LodingView mLodingView;
 
     private static final int H_TIME = 1001;
@@ -94,8 +101,11 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
 
         initDialogView();
 
-        tv_password_login = findViewById(R.id.tv_password_login);
-        tv_password_login.setOnClickListener(this);
+//        tv_password_login = findViewById(R.id.tv_password_login);
+//        tv_password_login.setOnClickListener(this);
+
+        ic_qq = findViewById(R.id.ic_qq);
+        ic_qq.setOnClickListener(this);
 
         et_phone = (EditText) findViewById(R.id.et_search);
         et_code = (EditText) findViewById(R.id.et_code);
@@ -109,6 +119,11 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
         if (!TextUtils.isEmpty(phone)) {
             et_phone.setText(phone);
         }
+    }
+
+    @Override
+    protected void initData() {
+
     }
 
     private void initDialogView() {
@@ -212,22 +227,50 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
                 Log.d("TAG", "onResponse: " + response.body().string());
             }
         });
+    }
 
-//        BmobManager.getInstance().requestSMS(phone, new QueryListener<Integer>() {
-//            @Override
-//            public void done(Integer integer, BmobException e) {
-//                if (e == null) {
-//                    btn_send_code.setEnabled(false);
-//                    mHandler.sendEmptyMessage(H_TIME);
-//                    Toast.makeText(LoginActivity.this, getString(R.string.text_user_resuest_succeed),
-//                            Toast.LENGTH_SHORT).show();
-//                } else {
-//                    LogUtils.e("SMS:" + e.toString());
-//                    Toast.makeText(LoginActivity.this, getString(R.string.text_user_resuest_fail),
-//                            Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
+    Tencent mTencent;
+    String token;
+    String expires_in;
+    String uniqueCode;
+    //授权登录监听（最下面是返回结果）
+    private IUiListener loginListener = new IUiListener() {
+        @Override
+        public void onComplete(Object o) {
+            uniqueCode = ((JSONObject) o).optString("openid"); //QQ的openid
+            try {
+                token = ((JSONObject) o).getString("access_token");
+                expires_in = ((JSONObject) o).getString("expires_in");
+                //在这里直接可以处理登录
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onError(UiError uiError) {
+        }
+
+        @Override
+        public void onCancel() {
+        }
+
+        @Override
+        public void onWarning(int i) {
+        }
+    };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mTencent.onActivityResultData(requestCode, resultCode, data, loginListener);
+        if (requestCode == com.tencent.connect.common.Constants.REQUEST_API) {
+            if (resultCode == com.tencent.connect.common.Constants.REQUEST_QQ_SHARE ||
+                    resultCode == com.tencent.connect.common.Constants.REQUEST_QZONE_SHARE ||
+                    resultCode == com.tencent.connect.common.Constants.REQUEST_OLD_SHARE) {
+                mTencent.handleResultData(data, loginListener);
+            }
+        }
     }
 
     @Override
@@ -241,8 +284,17 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
             case R.id.btn_login:
                 login();
                 break;
-            case R.id.tv_password_login:
+//            case R.id.tv_password_login:
                 //startActivity(new Intent(this, TestLoginActivity.class));
+//                break;
+            case R.id.ic_qq:
+                //QQ登录
+                if (null == mTencent) {
+                    mTencent = Tencent.createInstance("101925028", this.getApplicationContext());
+                    if (!mTencent.isSessionValid()) {
+                        mTencent.login(this, "all", loginListener);
+                    }
+                }
                 break;
         }
     }

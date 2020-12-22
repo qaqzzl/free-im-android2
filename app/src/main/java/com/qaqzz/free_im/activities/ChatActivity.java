@@ -58,6 +58,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -287,14 +288,14 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
         et_input_msg = (EditText) findViewById(R.id.et_input_msg);
         btn_send_msg = (Button) findViewById(R.id.btn_send_msg);
 
-        ll_voice = (LinearLayout) findViewById(R.id.ll_voice);
+//        ll_voice = (LinearLayout) findViewById(R.id.ll_voice);
         ll_camera = (LinearLayout) findViewById(R.id.ll_camera);
         ll_pic = (LinearLayout) findViewById(R.id.ll_pic);
         ll_location = (LinearLayout) findViewById(R.id.ll_location);
         ll_chat_bg = (LinearLayout) findViewById(R.id.ll_chat_bg);
 
         btn_send_msg.setOnClickListener(this);
-        ll_voice.setOnClickListener(this);
+//        ll_voice.setOnClickListener(this);
         ll_camera.setOnClickListener(this);
         ll_pic.setOnClickListener(this);
         ll_location.setOnClickListener(this);
@@ -560,14 +561,11 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                     }
                     break;
                 case 3:     // 位置
-//                    LocationMessage locationMessage = (LocationMessage) m.getContent();
-//                    if (m.getSenderUserId().equals(yourUserId)) {
-//                        addLocation(0, locationMessage.getLat(),
-//                                locationMessage.getLng(), locationMessage.getPoi());
-//                    } else {
-//                        addLocation(1, locationMessage.getLat(),
-//                                locationMessage.getLng(), locationMessage.getPoi());
-//                    }
+                    if (objectUserId.equals(me_uid)) {
+                        addLocation(1, m.getContent());
+                    } else {
+                        addLocation(0, m.getContent());
+                    }
                     break;
                 case 4:
                     break;
@@ -632,7 +630,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 //清空消息文本框
                 et_input_msg.setText("");
                 break;
-            case R.id.ll_voice:         // 语音 - 现在的语音是把语音转换成文字  晕了... 以后改
+//            case R.id.ll_voice:         // 语音 - 现在的语音是把语音转换成文字  晕了... 以后改
 //                VoiceManager.getInstance(this).startSpeak(new RecognizerDialogListener() {
 //                    @Override
 //                    public void onResult(RecognizerResult recognizerResult, boolean b) {
@@ -658,7 +656,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
 //                        LogUtils.e("speechError:" + speechError.toString());
 //                    }
 //                });
-                break;
+//                break;
             case R.id.ll_camera:        // 拍照
                 FileHelper.getInstance().toCamera(this);
                 break;
@@ -766,12 +764,27 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
         model.setLa(la);
         model.setLo(lo);
         model.setAddress(address);
-//        model.setMapUrl(MapManager.getInstance().getMapUrl(la, lo));
+        model.setMapUrl(MapManager.getInstance().getMapUrl(la, lo));
         model.setMessage_status("");
         baseAddItem(model);
     }
-    private void addLocation(int index, String address) {
-
+    private void addLocation(int index, String loca) {
+        ChatModel model = new ChatModel();
+        if (index == 0) {
+            model.setType(TYPE_LEFT_LOCATION);
+        } else {
+            model.setType(TYPE_RIGHT_LOCATION);
+        }
+        List<String> result = Arrays.asList(loca.split(":"));
+        double la = Double.valueOf(result.get(0));
+        double lo = Double.valueOf(result.get(1));
+        String address = result.get(2);
+        model.setLa(la);
+        model.setLo(lo);
+        model.setAddress(address);
+        model.setMapUrl(MapManager.getInstance().getMapUrl(la, lo));
+        model.setMessage_status("");
+        baseAddItem(model);
     }
 
     // 设置消息为已读
@@ -831,10 +844,6 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 double la = data.getDoubleExtra("la", 0);
                 double lo = data.getDoubleExtra("lo", 0);
                 String address = data.getStringExtra("address");
-
-                LogUtils.i("la:" + la);
-                LogUtils.i("lo:" + lo);
-                LogUtils.i("address:" + address);
 
                 if (TextUtils.isEmpty(address)) {
                     MapManager.getInstance().poi2address(la, lo, new MapManager.OnPoi2AddressGeocodeListener() {

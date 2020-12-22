@@ -92,7 +92,7 @@
     <string name="text_me_info_boy">boy</string>
     <string name="text_me_info_girl">girl</string>
 
-    <string name="text_chat_record_audio">[audio]</string>
+    <string name="text_chat_record_audio">[voice]</string>
     <string name="text_chat_record_video">[video]</string>
     <string name="text_chat_record_img">[image]</string>
     <string name="text_chat_record_location">[location]</string>

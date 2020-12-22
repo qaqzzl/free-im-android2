@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">Free自由</string>
+    <string name="app_name">Free</string>
 
     <string name="app_index_text">相遇总是美好的</string>
     <string name="app_friend_qrcode">扫一扫二维码，加我好友</string>
@@ -94,7 +94,7 @@
     <string name="text_me_info_boy">男</string>
     <string name="text_me_info_girl">女</string>
 
-    <string name="text_chat_record_audio">[音频]</string>
+    <string name="text_chat_record_audio">[语音]</string>
     <string name="text_chat_record_video">[视频]</string>
     <string name="text_chat_record_img">[图片]</string>
     <string name="text_chat_record_location">[位置]</string>
