@@ -79,7 +79,9 @@
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="behind"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
 
+        
         <!--用户信息-->
         <activity
             android:name=".activities.UserInfoActivity"

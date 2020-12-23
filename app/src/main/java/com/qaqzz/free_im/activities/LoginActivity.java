@@ -241,6 +241,10 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
             try {
                 token = ((JSONObject) o).getString("access_token");
                 expires_in = ((JSONObject) o).getString("expires_in");
+
+                Log.d("TAG", "((JSONObject) o): " + ((JSONObject) o).toString());
+                Log.d("TAG", "token: " + token);
+                Log.d("TAG", "expires_in: " + expires_in);
                 //在这里直接可以处理登录
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -291,9 +295,10 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
                 //QQ登录
                 if (null == mTencent) {
                     mTencent = Tencent.createInstance("101925028", this.getApplicationContext());
-                    if (!mTencent.isSessionValid()) {
-                        mTencent.login(this, "all", loginListener);
-                    }
+                }
+                mTencent.logout(this);
+                if (!mTencent.isSessionValid()) {
+                    mTencent.login(this, "all", loginListener);
                 }
                 break;
         }
