@@ -1,5 +1,6 @@
 package com.qaqzz.free_im.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
@@ -22,7 +23,10 @@ import com.qaqzz.framework.view.LodingView;
 import com.qaqzz.framework.view.TouchPictureV;
 import com.qaqzz.free_im.MainActivity;
 import com.qaqzz.free_im.R;
+import com.qaqzz.free_im.api.AddFriendApi;
 import com.qaqzz.free_im.api.LoginApi;
+import com.qaqzz.free_im.api.LoginQQApi;
+import com.qaqzz.free_im.api.SendSms;
 import com.qaqzz.free_im.http.api.ApiListener;
 import com.qaqzz.free_im.http.api.ApiUtil;
 import com.tencent.tauth.IUiListener;
@@ -200,44 +204,37 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
             return;
         }
         btn_send_code.setEnabled(false);
-        mHandler.sendEmptyMessage(H_TIME);
-        Toast.makeText(LoginActivity.this, getString(R.string.text_user_resuest_succeed),
-        Toast.LENGTH_SHORT).show();
+        Context mContext = this;
         //2.请求短信验证码
-        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
-        String requestBody = "{\"phone\": \"18016276521\"}";
-        Request request = new Request.Builder()
-                .url("http://127.0.0.1:8066/login/send.login.sms")
-                .post(RequestBody.create(mediaType, requestBody))
-                .build();
-        OkHttpClient okHttpClient = new OkHttpClient();
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d("TAG", "onFailure: " + e.getMessage());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d("TAG", response.protocol() + " " +response.code() + " " + response.message());
-                Headers headers = response.headers();
-                for (int i = 0; i < headers.size(); i++) {
-                    Log.d("TAG", headers.name(i) + ":" + headers.value(i));
+        try{
+            SendSms apiBase = new SendSms(phone, "login");
+            apiBase.post(new ApiListener() {
+                @Override
+                public void success(ApiUtil api, JSONObject response) {
+                    mHandler.sendEmptyMessage(H_TIME);
+                    Toast.makeText(LoginActivity.this, getString(R.string.text_user_resuest_succeed),
+                            Toast.LENGTH_SHORT).show();
                 }
-                Log.d("TAG", "onResponse: " + response.body().string());
-            }
-        });
+                @Override
+                public void error(ApiUtil api, JSONObject response) {
+                    btn_send_code.setEnabled(true);
+                    Toast.makeText(LoginActivity.this,response.optString("msg"),Toast.LENGTH_SHORT).show();
+                }
+            });
+        }catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     Tencent mTencent;
     String token;
     String expires_in;
-    String uniqueCode;
+    String openid;
     //授权登录监听（最下面是返回结果）
     private IUiListener loginListener = new IUiListener() {
         @Override
         public void onComplete(Object o) {
-            uniqueCode = ((JSONObject) o).optString("openid"); //QQ的openid
+            openid = ((JSONObject) o).optString("openid"); //QQ的openid
             try {
                 token = ((JSONObject) o).getString("access_token");
                 expires_in = ((JSONObject) o).getString("expires_in");
@@ -246,6 +243,33 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
                 Log.d("TAG", "token: " + token);
                 Log.d("TAG", "expires_in: " + expires_in);
                 //在这里直接可以处理登录
+                //显示LodingView
+                mLodingView.show(getString(R.string.text_login_now_login_text));
+                try{
+                    LoginQQApi apiBase = new LoginQQApi(openid, token);
+                    apiBase.post(new ApiListener() {
+                        @Override
+                        public void success(ApiUtil api, JSONObject response) {
+                            SpUtils.getInstance().putString(Constants.SP_TOKEN, apiBase.mInfo.getAccess_token());
+                            SpUtils.getInstance().putString(Constants.SP_USERID, apiBase.mInfo.getUid());
+                            mLodingView.hide();
+                            // 刷新个人信息事件
+                            EventManager.post(EventManager.EVENT_REFRE_ME_INFO);
+                            // 用户登录事件
+                            EventManager.post(EventManager.ENTER_FROM_LOGIN_PAGE);
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            finish();
+                        }
+                        @Override
+                        public void error(ApiUtil api, JSONObject response) {
+                            mLodingView.hide();
+                            Toast.makeText(LoginActivity.this,response.optString("msg"),Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
