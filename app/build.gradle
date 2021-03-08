@@ -3,13 +3,13 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         debug {
-            storeFile file('F:\\work\\android\\free-im\\app\\scripts\\free-im.jks')
+            storeFile file('/Users/zerozz/work/android/free-im-android/app/scripts/free-im.jks')
             storePassword 'erppccfree1313'
             keyAlias 'free-im'
             keyPassword 'erppccfree1313'
         }
         release {
-            storeFile file('F:\\work\\android\\free-im\\app\\scripts\\free-im.jks')
+            storeFile file('/Users/zerozz/work/android/free-im-android/app/scripts/free-im.jks')
             storePassword 'erppccfree1313'
             keyAlias 'free-im'
             keyPassword 'erppccfree1313'
@@ -35,8 +35,8 @@ android {
     buildTypes {
         debug {
             //自定义Gradle常量
-            buildConfigField("String","HTTP_SERVER","\"http://192.168.2.248:8066\"")
-            buildConfigField("String","SOCKET_SERVER","\"192.168.2.248\"")
+            buildConfigField("String","HTTP_SERVER","\"http://192.168.2.204:8066\"")
+            buildConfigField("String","SOCKET_SERVER","\"192.168.2.204\"")
 //            buildConfigField("String","HTTP_SERVER","\"http://192.168.1.245:8066\"")
 //            buildConfigField("String","SOCKET_SERVER","\"192.168.1.245\"")
             buildConfigField("String","SOCKET_SERVER_PORT","\"1208\"")
