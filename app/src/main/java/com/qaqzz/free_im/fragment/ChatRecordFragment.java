@@ -194,7 +194,7 @@ public class ChatRecordFragment extends BaseFragment  implements SwipeRefreshLay
         // 查询聊天消息
         List<Message> messageList = messageDao.queryBuilder()
                 .where(MessageDao.Properties.Chatroom_id.eq(c.getChatroom_id()))
-                .orderDesc(MessageDao.Properties._id)
+                .orderDesc(MessageDao.Properties.Last_send_time)
                 .limit(1)
                 .list();
         if (messageList.size() > 0) {
