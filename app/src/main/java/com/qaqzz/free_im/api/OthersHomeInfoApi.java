@@ -17,10 +17,6 @@ import org.json.JSONObject;
 public class OthersHomeInfoApi extends ApiUtil {
     public OthersHomeInfoBean mInfo = new OthersHomeInfoBean();
     public OthersHomeInfoApi(String member_id){
-        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
-        String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        addParam("uid",uid);
-        addParam("access_token",token);
         addParam("member_id",member_id);
     }
 

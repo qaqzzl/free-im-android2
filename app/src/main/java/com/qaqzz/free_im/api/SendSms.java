@@ -16,10 +16,6 @@ import org.json.JSONObject;
 public class SendSms extends ApiUtil {
     public BaseBean mInfo = new BaseBean();
     public SendSms(String phone, String type){
-        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
-        String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        addParam("uid",uid);
-        addParam("access_token",token);
         addParam("phone",phone);
         addParam("type",type);
     }

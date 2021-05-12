@@ -8,7 +8,7 @@ package com.qaqzz.socket.bean;
  */
 public class AuthMessageBean {
     private String DeviceId;
-    private String UserId;
+    private int UserId;
     private String AccessToken;
     private String DeviceType;
     private String ClientType;
@@ -21,11 +21,11 @@ public class AuthMessageBean {
         DeviceId = deviceId;
     }
 
-    public String getUserId() {
+    public int getUserId() {
         return UserId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         UserId = userId;
     }
 

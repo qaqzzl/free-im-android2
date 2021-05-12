@@ -21,10 +21,6 @@ import java.util.List;
 public class SearchFriendApi extends ApiUtil {
     public SearchFriendBean mInfo = new SearchFriendBean();
     public SearchFriendApi(String search){
-        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
-        String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        addParam("uid",uid);
-        addParam("access_token",token);
         addParam("search",search);
     }
 

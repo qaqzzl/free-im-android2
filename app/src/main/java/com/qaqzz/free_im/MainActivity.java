@@ -317,7 +317,7 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
         //获取TOKEN , USERID
         String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
         String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        if (!TextUtils.isEmpty(token) && !TextUtils.isEmpty(uid)) {
+        if (!TextUtils.isEmpty(token) && TextUtils.isEmpty(uid)) {
             // 请求用户基本信息
             try {
                 MemberInfoApi apiBase = new MemberInfoApi();

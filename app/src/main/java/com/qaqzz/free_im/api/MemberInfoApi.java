@@ -16,10 +16,6 @@ import org.json.JSONObject;
 public class MemberInfoApi extends ApiUtil {
     public MemberInfoBean mInfo = new MemberInfoBean();
     public MemberInfoApi(){
-        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
-        String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        addParam("uid",uid);
-        addParam("access_token",token);
     }
 
     @Override

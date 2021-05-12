@@ -3,13 +3,13 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         debug {
-            storeFile file('/Users/zerozz/work/android/free-im-android/app/scripts/free-im.jks')
+            storeFile file('./scripts/free-im.jks')
             storePassword 'erppccfree1313'
             keyAlias 'free-im'
             keyPassword 'erppccfree1313'
         }
         release {
-            storeFile file('/Users/zerozz/work/android/free-im-android/app/scripts/free-im.jks')
+            storeFile file('./scripts/free-im.jks')
             storePassword 'erppccfree1313'
             keyAlias 'free-im'
             keyPassword 'erppccfree1313'
@@ -21,8 +21,8 @@ android {
         applicationId "com.qaqzz.free_im"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // 目前市面上绝大部分的CPU架构都是 ARMv7/ARMv8，所以可以在gradle中加入配置，只保留v7,v8。
@@ -35,10 +35,10 @@ android {
     buildTypes {
         debug {
             //自定义Gradle常量
-            buildConfigField("String","HTTP_SERVER","\"http://192.168.2.204:8066\"")
-            buildConfigField("String","SOCKET_SERVER","\"192.168.2.204\"")
-//            buildConfigField("String","HTTP_SERVER","\"http://192.168.1.245:8066\"")
-//            buildConfigField("String","SOCKET_SERVER","\"192.168.1.245\"")
+//            buildConfigField("String","HTTP_SERVER","\"http://192.168.2.204:8066\"")
+//            buildConfigField("String","SOCKET_SERVER","\"192.168.2.204\"")
+            buildConfigField("String","HTTP_SERVER","\"http://192.168.2.248:8066\"")
+            buildConfigField("String","SOCKET_SERVER","\"192.168.2.248\"")
             buildConfigField("String","SOCKET_SERVER_PORT","\"1208\"")
             buildConfigField("boolean","LOG_DEBUG","true")
             buildConfigField("String","LOG_TAG","\"Meet\"")

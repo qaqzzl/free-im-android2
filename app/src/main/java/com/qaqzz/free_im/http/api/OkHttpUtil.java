@@ -3,6 +3,8 @@ package com.qaqzz.free_im.http.api;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.qaqzz.framework.entity.Constants;
+import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.free_im.http.response.OkHttpCallback;
 
 import java.io.IOException;
@@ -114,7 +116,11 @@ public class OkHttpUtil {
             RequestBody.create(mediaType, requestBody);
 
 //            RequestBody body = createEncodingBuilderBody(bodyMap);
-            Request request =  new Request.Builder().post( RequestBody.create(mediaType, requestBody) ).url(url).build();
+            String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
+            if (token != "") {
+                token = "Bearer "+token;
+            }
+            Request request =  new Request.Builder().addHeader("Authorization", token).post( RequestBody.create(mediaType, requestBody) ).url(url).build();
             call = mOkHttpClient.newCall(request);
             call.enqueue(okHttpCallback);
         } catch (Throwable e) {

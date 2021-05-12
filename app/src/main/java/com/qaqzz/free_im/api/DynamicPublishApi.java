@@ -35,10 +35,7 @@ public class DynamicPublishApi extends ApiUtil {
     private String image_url;
 
     public DynamicPublishApi(){
-        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
-        String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        addParam("uid",uid);
-        addParam("access_token",token);
+
     }
 
     @Override

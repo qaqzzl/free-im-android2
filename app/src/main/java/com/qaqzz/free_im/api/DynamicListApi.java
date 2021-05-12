@@ -21,11 +21,7 @@ import java.util.List;
 public class DynamicListApi extends ApiUtil {
     public DynamicListBean mInfo = new DynamicListBean();
     public DynamicListApi(String current_page, String perpage){
-        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
-        String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        addParam("uid",uid);
-        addParam("access_token",token);
-        addParam("current_page",current_page);
+        addParam("page",current_page);
         addParam("perpage",perpage);
     }
 

@@ -16,10 +16,6 @@ import org.json.JSONObject;
 public class AddFriendApi extends ApiUtil {
     public BaseBean mInfo = new BaseBean();
     public AddFriendApi(String friend_id, String remark){
-        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
-        String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        addParam("uid",uid);
-        addParam("access_token",token);
         addParam("friend_id",friend_id);
         addParam("remark",remark);
     }

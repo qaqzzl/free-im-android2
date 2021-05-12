@@ -16,10 +16,6 @@ import org.json.JSONObject;
 public class FriendApplyActionApi extends ApiUtil {
     public BaseBean mInfo = new BaseBean();
     public FriendApplyActionApi(String id, String action){
-        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
-        String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        addParam("uid",uid);
-        addParam("access_token",token);
         addParam("id",id);
         addParam("action",action);
     }

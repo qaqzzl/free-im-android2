@@ -18,10 +18,6 @@ import org.json.JSONObject;
 public class GetChatroomAvatarNameByChatroomIdApi extends ApiUtil {
     public GetChatroomAvatarNameByChatroomIdBean mInfo = new GetChatroomAvatarNameByChatroomIdBean();
     public GetChatroomAvatarNameByChatroomIdApi(String chatroom_id){
-        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
-        String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        addParam("uid",uid);
-        addParam("access_token",token);
         addParam("chatroom_id",chatroom_id);
     }
 

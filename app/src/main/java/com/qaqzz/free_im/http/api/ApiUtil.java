@@ -2,7 +2,9 @@ package com.qaqzz.free_im.http.api;
 
 import android.content.Context;
 
+import com.qaqzz.framework.entity.Constants;
 import com.qaqzz.framework.utils.LogUtils;
+import com.qaqzz.framework.utils.SpUtils;
 import com.qaqzz.framework.utils.Util;
 import com.qaqzz.free_im.http.response.OkHttpCallback;
 
@@ -30,7 +32,6 @@ public abstract class ApiUtil {
      * API发送监听
      */
     private ApiListener mApiListener = null;
-
     /**
      * 发送监听
      */

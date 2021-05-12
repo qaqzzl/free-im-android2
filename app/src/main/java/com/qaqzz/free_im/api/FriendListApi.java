@@ -21,10 +21,6 @@ import java.util.List;
 public class FriendListApi extends ApiUtil {
     public FriendListBean mInfo = new FriendListBean();
     public FriendListApi(){
-        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
-        String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        addParam("uid",uid);
-        addParam("access_token",token);
     }
 
     @Override

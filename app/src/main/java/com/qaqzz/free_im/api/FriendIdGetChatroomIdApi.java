@@ -17,10 +17,6 @@ import org.json.JSONObject;
 public class FriendIdGetChatroomIdApi extends ApiUtil {
     public FriendIdGetChatroomIdBean mInfo = new FriendIdGetChatroomIdBean();
     public FriendIdGetChatroomIdApi(String friend_id){
-        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
-        String uid = SpUtils.getInstance().getString(Constants.SP_USERID, "");
-        addParam("uid",uid);
-        addParam("access_token",token);
         addParam("friend_id",friend_id);
     }
 

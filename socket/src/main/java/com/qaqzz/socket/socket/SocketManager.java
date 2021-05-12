@@ -96,7 +96,7 @@ public class SocketManager {
                     String device_id = DeviceUtil.getDeviceId(mContext);
                     AuthMessageBean AuthMessage = new AuthMessageBean();
                     AuthMessage.setAccessToken(token);
-                    AuthMessage.setUserId(uid);
+                    AuthMessage.setUserId(Integer.parseInt(uid));
                     AuthMessage.setDeviceId(device_id);
                     AuthMessage.setClientType("android");
                     AuthMessage.setDeviceType("mobile");
