@@ -16,7 +16,7 @@ import org.json.JSONObject;
  */
 public class OthersHomeInfoApi extends ApiUtil {
     public OthersHomeInfoBean mInfo = new OthersHomeInfoBean();
-    public OthersHomeInfoApi(String member_id){
+    public OthersHomeInfoApi(int member_id){
         addParam("member_id",member_id);
     }
 
@@ -28,7 +28,8 @@ public class OthersHomeInfoApi extends ApiUtil {
     @Override
     protected void parseData(JSONObject jsonObject) throws Exception {
         try {
-            JSONObject dataInfo = (JSONObject) jsonObject.get("data");
+            JSONObject data = (JSONObject) jsonObject.get("data");
+            JSONObject dataInfo = (JSONObject) data.getJSONObject("member_info");
             mInfo.setAvatar(dataInfo.optString("avatar"));
             mInfo.setBirthdate(dataInfo.optString("birthdate"));
             mInfo.setCity(dataInfo.optString("city"));
@@ -37,7 +38,7 @@ public class OthersHomeInfoApi extends ApiUtil {
             mInfo.setNickname(dataInfo.optString("nickname"));
             mInfo.setProvince(dataInfo.optString("province"));
             mInfo.setSignature(dataInfo.optString("signature"));
-            mInfo.setIs_friend(dataInfo.optString("is_friend"));
+            mInfo.setIs_friend(data.optString("is_friend"));
         }catch (Exception ex) {
             ex.printStackTrace();
         }

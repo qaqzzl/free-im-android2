@@ -219,7 +219,7 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
         Context mContext = this;
         //查询他人主页用户信息
         try{
-            OthersHomeInfoApi apiBase = new OthersHomeInfoApi(userId);
+            OthersHomeInfoApi apiBase = new OthersHomeInfoApi(Integer.valueOf(userId).intValue());
             apiBase.post(new ApiListener() {
                 @Override
                 public void success(ApiUtil api, JSONObject response) {

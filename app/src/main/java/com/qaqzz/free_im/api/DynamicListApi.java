@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class DynamicListApi extends ApiUtil {
     public DynamicListBean mInfo = new DynamicListBean();
-    public DynamicListApi(String current_page, String perpage){
+    public DynamicListApi(int current_page, int perpage){
         addParam("page",current_page);
         addParam("perpage",perpage);
     }

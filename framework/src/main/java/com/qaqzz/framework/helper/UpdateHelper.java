@@ -27,10 +27,6 @@ import java.io.File;
  * FileName: UpdateHelper
  * Founder: LiuGuiLin
  * Profile: App更新帮助类
- * <p>
- * 如何更新？
- * 1.将Apk上传至Bmob获得Url
- * 2.修改UpdateSet中的属性
  * versionCode +1
  */
 public class UpdateHelper {

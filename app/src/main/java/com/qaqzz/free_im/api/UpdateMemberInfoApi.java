@@ -19,8 +19,6 @@ public class UpdateMemberInfoApi extends ApiUtil {
 
     public BaseBean mInfo = new BaseBean();
     /**
-     * access_token : abc
-     * uid : 10
      * nickname : 测试用户10-update
      * gender : w
      * birthdate : 0
@@ -28,11 +26,9 @@ public class UpdateMemberInfoApi extends ApiUtil {
      * avatar : https://blog.cdn.qaqzz.com/icon.png
      */
 
-    private String access_token;
-    private String uid;
     private String nickname;
     private String gender;
-    private String birthdate;
+    private int birthdate;
     private String signature;
     private String avatar;
 
@@ -68,21 +64,6 @@ public class UpdateMemberInfoApi extends ApiUtil {
         return true;
     }
 
-    public String getAccess_token() {
-        return access_token;
-    }
-
-    public void setAccess_token(String access_token) {
-        this.access_token = access_token;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
 
     public String getNickname() {
         return nickname;
@@ -102,11 +83,11 @@ public class UpdateMemberInfoApi extends ApiUtil {
         this.gender = gender;
     }
 
-    public String getBirthdate() {
+    public int getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(String birthdate) {
+    public void setBirthdate(int birthdate) {
         addParam("birthdate",birthdate);
         this.birthdate = birthdate;
     }

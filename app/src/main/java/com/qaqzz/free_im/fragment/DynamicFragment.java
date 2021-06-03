@@ -321,9 +321,7 @@ public class DynamicFragment extends BaseFragment implements View.OnClickListene
         Context context = this.getContext();
         //发布列表
         try{
-            String page_str = String.valueOf(current_page);
-            String perpage_str = String.valueOf(per_page);
-            DynamicListApi apiBase = new DynamicListApi(page_str, perpage_str);
+            DynamicListApi apiBase = new DynamicListApi(current_page, per_page);
 
             apiBase.post(new ApiListener() {
                 @Override

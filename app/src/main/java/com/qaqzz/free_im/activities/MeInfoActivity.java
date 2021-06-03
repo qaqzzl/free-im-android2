@@ -339,7 +339,7 @@ public class MeInfoActivity extends BaseBackActivity implements View.OnClickList
             }
             apiBase.setNickname(nickName);
             apiBase.setGender(sex.equals("男")?"m":"w");
-            apiBase.setBirthdate(birthday);
+            apiBase.setBirthdate(Integer.valueOf(birthday).intValue());
             apiBase.setSignature(desc);
             apiBase.post(new ApiListener() {
                 @Override
